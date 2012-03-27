@@ -1,0 +1,1400 @@
+Terminals unused in grammar
+
+   NEQ
+   LT
+   LE
+   GT
+   GE
+   AND
+   OR
+
+
+State 1 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: exp
+
+    2 exp: /* empty */
+    3    | NIL
+    4    | STRING
+    5    | intexp
+    6    | LPAREN expseq RPAREN
+    7    | funcall
+    8    | arraycreate
+    9    | condexp
+   10    | LET decs IN expseq END
+   11    | BREAK
+
+   12 arglist: exp
+   13        | arglist COMMA exp
+
+   14 arraycreate: ID LBRACK exp RBRACK OF exp
+
+   15 condexp: IF intexp THEN exp ELSE exp
+   16        | WHILE intexp DO exp
+   17        | FOR ID ASSIGN intexp TO intexp DO exp
+
+   18 intexp: INT
+   19       | lvalue
+   20       | intexp PLUS intexp
+   21       | intexp MINUS intexp
+   22       | intexp TIMES intexp
+   23       | intexp DIVIDE intexp
+
+   24 funcall: ID LPAREN arglist RPAREN
+
+   25 expseq: exp
+   26       | expseq SEMICOLON exp
+
+   27 decs: /* empty */
+   28     | decs dec
+
+   29 dec: tydec
+   30    | vardec
+   31    | fundec
+
+   32 lvalue: ID
+   33       | lvalue DOT ID
+   34       | lvalue LBRACK exp RBRACK
+
+   35 tydec: TYPE ID EQ ty
+
+   36 ty: ID
+   37   | LBRACE tyfields RBRACE
+   38   | ARRAY OF ID
+
+   39 tyfields: /* empty */
+   40         | tyfields1
+
+   41 tyfields1: tyfield
+   42          | tyfields1 COMMA tyfield
+
+   43 tyfield: ID COLON ID
+
+   44 vardec: VAR ID ASSIGN exp
+   45       | VAR ID COLON ID ASSIGN exp
+
+   46 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp
+   47       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ID (258) 14 17 24 32 33 35 36 38 43 44 45 46 47
+STRING (259) 4
+INT (260) 18
+COMMA (261) 13 42
+COLON (262) 43 45 47
+SEMICOLON (263) 26
+LPAREN (264) 6 24 46 47
+RPAREN (265) 6 24 46 47
+LBRACK (266) 14 34
+RBRACK (267) 14 34
+LBRACE (268) 37
+RBRACE (269) 37
+DOT (270) 33
+PLUS (271) 20
+MINUS (272) 21
+TIMES (273) 22
+DIVIDE (274) 23
+EQ (275) 35 46 47
+NEQ (276)
+LT (277)
+LE (278)
+GT (279)
+GE (280)
+AND (281)
+OR (282)
+ASSIGN (283) 17 44 45
+ARRAY (284) 38
+IF (285) 15
+THEN (286) 15
+ELSE (287) 15
+WHILE (288) 16
+FOR (289) 17
+TO (290) 17
+DO (291) 16 17
+LET (292) 10
+IN (293) 10
+END (294) 10
+OF (295) 14 38
+BREAK (296) 11
+NIL (297) 3
+FUNCTION (298) 46 47
+VAR (299) 44 45
+TYPE (300) 35
+
+
+Nonterminals, with rules where they appear
+
+$accept (46)
+    on left: 0
+program (47)
+    on left: 1, on right: 0
+exp (48)
+    on left: 2 3 4 5 6 7 8 9 10 11, on right: 1 12 13 14 15 16 17 25
+    26 34 44 45 46 47
+arglist (49)
+    on left: 12 13, on right: 13 24
+arraycreate (50)
+    on left: 14, on right: 8
+condexp (51)
+    on left: 15 16 17, on right: 9
+intexp (52)
+    on left: 18 19 20 21 22 23, on right: 5 15 16 17 20 21 22 23
+funcall (53)
+    on left: 24, on right: 7
+expseq (54)
+    on left: 25 26, on right: 6 10 26
+decs (55)
+    on left: 27 28, on right: 10 28
+dec (56)
+    on left: 29 30 31, on right: 28
+lvalue (57)
+    on left: 32 33 34, on right: 19 33 34
+tydec (58)
+    on left: 35, on right: 29
+ty (59)
+    on left: 36 37 38, on right: 35
+tyfields (60)
+    on left: 39 40, on right: 37 46 47
+tyfields1 (61)
+    on left: 41 42, on right: 40 42
+tyfield (62)
+    on left: 43, on right: 41 42
+vardec (63)
+    on left: 44 45, on right: 30
+fundec (64)
+    on left: 46 47, on right: 31
+
+
+state 0
+
+    0 $accept: . program $end
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    program      go to state 11
+    exp          go to state 12
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 1
+
+   14 arraycreate: ID . LBRACK exp RBRACK OF exp
+   24 funcall: ID . LPAREN arglist RPAREN
+   32 lvalue: ID .
+
+    LPAREN  shift, and go to state 18
+    LBRACK  shift, and go to state 19
+
+    LBRACK    [reduce using rule 32 (lvalue)]
+    $default  reduce using rule 32 (lvalue)
+
+
+state 2
+
+    4 exp: STRING .
+
+    $default  reduce using rule 4 (exp)
+
+
+state 3
+
+   18 intexp: INT .
+
+    $default  reduce using rule 18 (intexp)
+
+
+state 4
+
+    6 exp: LPAREN . expseq RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 20
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    expseq       go to state 21
+    lvalue       go to state 17
+
+
+state 5
+
+   15 condexp: IF . intexp THEN exp ELSE exp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 23
+    lvalue  go to state 17
+
+
+state 6
+
+   16 condexp: WHILE . intexp DO exp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 24
+    lvalue  go to state 17
+
+
+state 7
+
+   17 condexp: FOR . ID ASSIGN intexp TO intexp DO exp
+
+    ID  shift, and go to state 25
+
+
+state 8
+
+   10 exp: LET . decs IN expseq END
+
+    $default  reduce using rule 27 (decs)
+
+    decs  go to state 26
+
+
+state 9
+
+   11 exp: BREAK .
+
+    $default  reduce using rule 11 (exp)
+
+
+state 10
+
+    3 exp: NIL .
+
+    $default  reduce using rule 3 (exp)
+
+
+state 11
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 27
+
+
+state 12
+
+    1 program: exp .
+
+    $default  reduce using rule 1 (program)
+
+
+state 13
+
+    8 exp: arraycreate .
+
+    $default  reduce using rule 8 (exp)
+
+
+state 14
+
+    9 exp: condexp .
+
+    $default  reduce using rule 9 (exp)
+
+
+state 15
+
+    5 exp: intexp .
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    PLUS    shift, and go to state 28
+    MINUS   shift, and go to state 29
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+
+    $default  reduce using rule 5 (exp)
+
+
+state 16
+
+    7 exp: funcall .
+
+    $default  reduce using rule 7 (exp)
+
+
+state 17
+
+   19 intexp: lvalue .
+   33 lvalue: lvalue . DOT ID
+   34       | lvalue . LBRACK exp RBRACK
+
+    LBRACK  shift, and go to state 32
+    DOT     shift, and go to state 33
+
+    $default  reduce using rule 19 (intexp)
+
+
+state 18
+
+   24 funcall: ID LPAREN . arglist RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 34
+    arglist      go to state 35
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 19
+
+   14 arraycreate: ID LBRACK . exp RBRACK OF exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 36
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 20
+
+   25 expseq: exp .
+
+    $default  reduce using rule 25 (expseq)
+
+
+state 21
+
+    6 exp: LPAREN expseq . RPAREN
+   26 expseq: expseq . SEMICOLON exp
+
+    SEMICOLON  shift, and go to state 37
+    RPAREN     shift, and go to state 38
+
+
+state 22
+
+   32 lvalue: ID .
+
+    $default  reduce using rule 32 (lvalue)
+
+
+state 23
+
+   15 condexp: IF intexp . THEN exp ELSE exp
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    PLUS    shift, and go to state 28
+    MINUS   shift, and go to state 29
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+    THEN    shift, and go to state 39
+
+
+state 24
+
+   16 condexp: WHILE intexp . DO exp
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    PLUS    shift, and go to state 28
+    MINUS   shift, and go to state 29
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+    DO      shift, and go to state 40
+
+
+state 25
+
+   17 condexp: FOR ID . ASSIGN intexp TO intexp DO exp
+
+    ASSIGN  shift, and go to state 41
+
+
+state 26
+
+   10 exp: LET decs . IN expseq END
+   28 decs: decs . dec
+
+    IN        shift, and go to state 42
+    FUNCTION  shift, and go to state 43
+    VAR       shift, and go to state 44
+    TYPE      shift, and go to state 45
+
+    dec     go to state 46
+    tydec   go to state 47
+    vardec  go to state 48
+    fundec  go to state 49
+
+
+state 27
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 28
+
+   20 intexp: intexp PLUS . intexp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 50
+    lvalue  go to state 17
+
+
+state 29
+
+   21 intexp: intexp MINUS . intexp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 51
+    lvalue  go to state 17
+
+
+state 30
+
+   22 intexp: intexp TIMES . intexp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 52
+    lvalue  go to state 17
+
+
+state 31
+
+   23 intexp: intexp DIVIDE . intexp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 53
+    lvalue  go to state 17
+
+
+state 32
+
+   34 lvalue: lvalue LBRACK . exp RBRACK
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 54
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 33
+
+   33 lvalue: lvalue DOT . ID
+
+    ID  shift, and go to state 55
+
+
+state 34
+
+   12 arglist: exp .
+
+    $default  reduce using rule 12 (arglist)
+
+
+state 35
+
+   13 arglist: arglist . COMMA exp
+   24 funcall: ID LPAREN arglist . RPAREN
+
+    COMMA   shift, and go to state 56
+    RPAREN  shift, and go to state 57
+
+
+state 36
+
+   14 arraycreate: ID LBRACK exp . RBRACK OF exp
+
+    RBRACK  shift, and go to state 58
+
+
+state 37
+
+   26 expseq: expseq SEMICOLON . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 59
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 38
+
+    6 exp: LPAREN expseq RPAREN .
+
+    $default  reduce using rule 6 (exp)
+
+
+state 39
+
+   15 condexp: IF intexp THEN . exp ELSE exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 60
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 40
+
+   16 condexp: WHILE intexp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 61
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 41
+
+   17 condexp: FOR ID ASSIGN . intexp TO intexp DO exp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 62
+    lvalue  go to state 17
+
+
+state 42
+
+   10 exp: LET decs IN . expseq END
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 20
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    expseq       go to state 63
+    lvalue       go to state 17
+
+
+state 43
+
+   46 fundec: FUNCTION . ID LPAREN tyfields RPAREN EQ exp
+   47       | FUNCTION . ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 64
+
+
+state 44
+
+   44 vardec: VAR . ID ASSIGN exp
+   45       | VAR . ID COLON ID ASSIGN exp
+
+    ID  shift, and go to state 65
+
+
+state 45
+
+   35 tydec: TYPE . ID EQ ty
+
+    ID  shift, and go to state 66
+
+
+state 46
+
+   28 decs: decs dec .
+
+    $default  reduce using rule 28 (decs)
+
+
+state 47
+
+   29 dec: tydec .
+
+    $default  reduce using rule 29 (dec)
+
+
+state 48
+
+   30 dec: vardec .
+
+    $default  reduce using rule 30 (dec)
+
+
+state 49
+
+   31 dec: fundec .
+
+    $default  reduce using rule 31 (dec)
+
+
+state 50
+
+   20 intexp: intexp . PLUS intexp
+   20       | intexp PLUS intexp .
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+
+    $default  reduce using rule 20 (intexp)
+
+
+state 51
+
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   21       | intexp MINUS intexp .
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+
+    $default  reduce using rule 21 (intexp)
+
+
+state 52
+
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   22       | intexp TIMES intexp .
+   23       | intexp . DIVIDE intexp
+
+    $default  reduce using rule 22 (intexp)
+
+
+state 53
+
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+   23       | intexp DIVIDE intexp .
+
+    $default  reduce using rule 23 (intexp)
+
+
+state 54
+
+   34 lvalue: lvalue LBRACK exp . RBRACK
+
+    RBRACK  shift, and go to state 67
+
+
+state 55
+
+   33 lvalue: lvalue DOT ID .
+
+    $default  reduce using rule 33 (lvalue)
+
+
+state 56
+
+   13 arglist: arglist COMMA . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 68
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 57
+
+   24 funcall: ID LPAREN arglist RPAREN .
+
+    $default  reduce using rule 24 (funcall)
+
+
+state 58
+
+   14 arraycreate: ID LBRACK exp RBRACK . OF exp
+
+    OF  shift, and go to state 69
+
+
+state 59
+
+   26 expseq: expseq SEMICOLON exp .
+
+    $default  reduce using rule 26 (expseq)
+
+
+state 60
+
+   15 condexp: IF intexp THEN exp . ELSE exp
+
+    ELSE  shift, and go to state 70
+
+
+state 61
+
+   16 condexp: WHILE intexp DO exp .
+
+    $default  reduce using rule 16 (condexp)
+
+
+state 62
+
+   17 condexp: FOR ID ASSIGN intexp . TO intexp DO exp
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    PLUS    shift, and go to state 28
+    MINUS   shift, and go to state 29
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+    TO      shift, and go to state 71
+
+
+state 63
+
+   10 exp: LET decs IN expseq . END
+   26 expseq: expseq . SEMICOLON exp
+
+    SEMICOLON  shift, and go to state 37
+    END        shift, and go to state 72
+
+
+state 64
+
+   46 fundec: FUNCTION ID . LPAREN tyfields RPAREN EQ exp
+   47       | FUNCTION ID . LPAREN tyfields RPAREN COLON ID EQ exp
+
+    LPAREN  shift, and go to state 73
+
+
+state 65
+
+   44 vardec: VAR ID . ASSIGN exp
+   45       | VAR ID . COLON ID ASSIGN exp
+
+    COLON   shift, and go to state 74
+    ASSIGN  shift, and go to state 75
+
+
+state 66
+
+   35 tydec: TYPE ID . EQ ty
+
+    EQ  shift, and go to state 76
+
+
+state 67
+
+   34 lvalue: lvalue LBRACK exp RBRACK .
+
+    $default  reduce using rule 34 (lvalue)
+
+
+state 68
+
+   13 arglist: arglist COMMA exp .
+
+    $default  reduce using rule 13 (arglist)
+
+
+state 69
+
+   14 arraycreate: ID LBRACK exp RBRACK OF . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 77
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 70
+
+   15 condexp: IF intexp THEN exp ELSE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 78
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 71
+
+   17 condexp: FOR ID ASSIGN intexp TO . intexp DO exp
+
+    ID   shift, and go to state 22
+    INT  shift, and go to state 3
+
+    intexp  go to state 79
+    lvalue  go to state 17
+
+
+state 72
+
+   10 exp: LET decs IN expseq END .
+
+    $default  reduce using rule 10 (exp)
+
+
+state 73
+
+   46 fundec: FUNCTION ID LPAREN . tyfields RPAREN EQ exp
+   47       | FUNCTION ID LPAREN . tyfields RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 80
+
+    $default  reduce using rule 39 (tyfields)
+
+    tyfields   go to state 81
+    tyfields1  go to state 82
+    tyfield    go to state 83
+
+
+state 74
+
+   45 vardec: VAR ID COLON . ID ASSIGN exp
+
+    ID  shift, and go to state 84
+
+
+state 75
+
+   44 vardec: VAR ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 85
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 76
+
+   35 tydec: TYPE ID EQ . ty
+
+    ID      shift, and go to state 86
+    LBRACE  shift, and go to state 87
+    ARRAY   shift, and go to state 88
+
+    ty  go to state 89
+
+
+state 77
+
+   14 arraycreate: ID LBRACK exp RBRACK OF exp .
+
+    $default  reduce using rule 14 (arraycreate)
+
+
+state 78
+
+   15 condexp: IF intexp THEN exp ELSE exp .
+
+    $default  reduce using rule 15 (condexp)
+
+
+state 79
+
+   17 condexp: FOR ID ASSIGN intexp TO intexp . DO exp
+   20 intexp: intexp . PLUS intexp
+   21       | intexp . MINUS intexp
+   22       | intexp . TIMES intexp
+   23       | intexp . DIVIDE intexp
+
+    PLUS    shift, and go to state 28
+    MINUS   shift, and go to state 29
+    TIMES   shift, and go to state 30
+    DIVIDE  shift, and go to state 31
+    DO      shift, and go to state 90
+
+
+state 80
+
+   43 tyfield: ID . COLON ID
+
+    COLON  shift, and go to state 91
+
+
+state 81
+
+   46 fundec: FUNCTION ID LPAREN tyfields . RPAREN EQ exp
+   47       | FUNCTION ID LPAREN tyfields . RPAREN COLON ID EQ exp
+
+    RPAREN  shift, and go to state 92
+
+
+state 82
+
+   40 tyfields: tyfields1 .
+   42 tyfields1: tyfields1 . COMMA tyfield
+
+    COMMA  shift, and go to state 93
+
+    $default  reduce using rule 40 (tyfields)
+
+
+state 83
+
+   41 tyfields1: tyfield .
+
+    $default  reduce using rule 41 (tyfields1)
+
+
+state 84
+
+   45 vardec: VAR ID COLON ID . ASSIGN exp
+
+    ASSIGN  shift, and go to state 94
+
+
+state 85
+
+   44 vardec: VAR ID ASSIGN exp .
+
+    $default  reduce using rule 44 (vardec)
+
+
+state 86
+
+   36 ty: ID .
+
+    $default  reduce using rule 36 (ty)
+
+
+state 87
+
+   37 ty: LBRACE . tyfields RBRACE
+
+    ID  shift, and go to state 80
+
+    $default  reduce using rule 39 (tyfields)
+
+    tyfields   go to state 95
+    tyfields1  go to state 82
+    tyfield    go to state 83
+
+
+state 88
+
+   38 ty: ARRAY . OF ID
+
+    OF  shift, and go to state 96
+
+
+state 89
+
+   35 tydec: TYPE ID EQ ty .
+
+    $default  reduce using rule 35 (tydec)
+
+
+state 90
+
+   17 condexp: FOR ID ASSIGN intexp TO intexp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 97
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 91
+
+   43 tyfield: ID COLON . ID
+
+    ID  shift, and go to state 98
+
+
+state 92
+
+   46 fundec: FUNCTION ID LPAREN tyfields RPAREN . EQ exp
+   47       | FUNCTION ID LPAREN tyfields RPAREN . COLON ID EQ exp
+
+    COLON  shift, and go to state 99
+    EQ     shift, and go to state 100
+
+
+state 93
+
+   42 tyfields1: tyfields1 COMMA . tyfield
+
+    ID  shift, and go to state 80
+
+    tyfield  go to state 101
+
+
+state 94
+
+   45 vardec: VAR ID COLON ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 102
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 95
+
+   37 ty: LBRACE tyfields . RBRACE
+
+    RBRACE  shift, and go to state 103
+
+
+state 96
+
+   38 ty: ARRAY OF . ID
+
+    ID  shift, and go to state 104
+
+
+state 97
+
+   17 condexp: FOR ID ASSIGN intexp TO intexp DO exp .
+
+    $default  reduce using rule 17 (condexp)
+
+
+state 98
+
+   43 tyfield: ID COLON ID .
+
+    $default  reduce using rule 43 (tyfield)
+
+
+state 99
+
+   47 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON . ID EQ exp
+
+    ID  shift, and go to state 105
+
+
+state 100
+
+   46 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 106
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 101
+
+   42 tyfields1: tyfields1 COMMA tyfield .
+
+    $default  reduce using rule 42 (tyfields1)
+
+
+state 102
+
+   45 vardec: VAR ID COLON ID ASSIGN exp .
+
+    $default  reduce using rule 45 (vardec)
+
+
+state 103
+
+   37 ty: LBRACE tyfields RBRACE .
+
+    $default  reduce using rule 37 (ty)
+
+
+state 104
+
+   38 ty: ARRAY OF ID .
+
+    $default  reduce using rule 38 (ty)
+
+
+state 105
+
+   47 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID . EQ exp
+
+    EQ  shift, and go to state 107
+
+
+state 106
+
+   46 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp .
+
+    $default  reduce using rule 46 (fundec)
+
+
+state 107
+
+   47 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    IF      shift, and go to state 5
+    WHILE   shift, and go to state 6
+    FOR     shift, and go to state 7
+    LET     shift, and go to state 8
+    BREAK   shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 2 (exp)
+
+    exp          go to state 108
+    arraycreate  go to state 13
+    condexp      go to state 14
+    intexp       go to state 15
+    funcall      go to state 16
+    lvalue       go to state 17
+
+
+state 108
+
+   47 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp .
+
+    $default  reduce using rule 47 (fundec)

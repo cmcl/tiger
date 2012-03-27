@@ -1,0 +1,122 @@
+%{
+#include <stdio.h>
+#include "util.h"
+#include "errormsg.h"
+
+int yylex(void); /* function prototype */
+
+void yyerror(char *s)
+{
+ EM_error(EM_tokPos, "%s", s);
+}
+%}
+
+
+%union {
+	int pos;
+	int ival;
+	string sval;
+	}
+
+%token <sval> ID STRING
+%token <ival> INT
+
+%token 
+  COMMA COLON SEMICOLON LPAREN RPAREN LBRACK RBRACK 
+  LBRACE RBRACE DOT 
+  PLUS MINUS TIMES DIVIDE EQ NEQ LT LE GT GE
+  AND OR ASSIGN
+  ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF 
+  BREAK NIL
+  FUNCTION VAR TYPE 
+
+%start program
+
+%left PLUS MINUS
+%left TIMES DIVIDE
+
+%%
+program:	  exp
+			;
+
+exp:		/* empty */	  
+			| NIL
+			| STRING
+			| intexp
+			/*| cmpexp	 TODO */
+			| LPAREN expseq RPAREN
+			| funcall
+			| arraycreate
+			| condexp
+			| LET decs IN expseq END
+			| BREAK
+			;
+
+arglist:	  exp
+			| arglist COMMA exp
+			;
+
+arraycreate:  ID LBRACK exp RBRACK OF exp
+			;
+
+boolop:		  exp AND exp
+			| exp OR exp
+
+condexp:	  IF intexp THEN exp ELSE exp
+			| WHILE intexp DO exp
+			| FOR ID ASSIGN intexp TO intexp DO exp
+			;
+intexp:		  INT
+			| lvalue
+			| intexp PLUS intexp
+			| intexp MINUS intexp
+			| intexp TIMES intexp
+			| intexp DIVIDE intexp
+			;
+
+funcall:	  ID LPAREN arglist RPAREN
+			;
+
+expseq:		  exp
+			| expseq SEMICOLON exp
+			;
+
+decs:		/* empty */
+			| decs dec
+			;
+
+dec:		  tydec
+			| vardec
+			| fundec
+			;
+			
+lvalue:		  ID
+			| lvalue DOT ID
+			| lvalue LBRACK exp RBRACK
+
+tydec:		  TYPE ID EQ ty
+			;
+
+ty:			  ID
+			| LBRACE tyfields RBRACE
+			| ARRAY OF ID
+			;
+
+tyfields:	  /* empty */
+			|  tyfields1
+			;
+
+tyfields1:	  tyfield
+			| tyfields1 COMMA tyfield
+			;
+
+tyfield:	  ID COLON ID
+			;
+
+vardec:		  VAR ID ASSIGN exp
+			| VAR ID COLON ID ASSIGN exp
+			;
+
+fundec:		  FUNCTION ID LPAREN tyfields RPAREN EQ exp
+			| FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+			;

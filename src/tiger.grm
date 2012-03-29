@@ -34,7 +34,7 @@ void yyerror(char *s)
 
 %left PLUS MINUS
 %left TIMES DIVIDE
-
+/* TODO: assoc for  LE LT GE GT EQ NEQ AND OR */
 %%
 program:	  exp
 			;
@@ -43,7 +43,8 @@ exp:		/* empty */
 			| NIL
 			| STRING
 			| intexp
-			/*| cmpexp	 TODO */
+			| cmpexp
+			| boolexp
 			| LPAREN expseq RPAREN
 			| funcall
 			| arraycreate
@@ -59,11 +60,18 @@ arglist:	  exp
 arraycreate:  ID LBRACK exp RBRACK OF exp
 			;
 
-boolop:		  exp AND exp
+boolexp:	  exp AND exp
 			| exp OR exp
+			
+cmpexp:		  exp LT exp
+			| exp GT exp
+			| exp LE exp
+			| exp GE exp
+			| exp EQ exp
+			| exp NEQ exp
 
 condexp:	  IF intexp THEN exp ELSE exp
-			| WHILE intexp DO exp
+			| WHILE boolexp DO exp
 			| FOR ID ASSIGN intexp TO intexp DO exp
 			;
 intexp:		  INT

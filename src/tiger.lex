@@ -1,11 +1,31 @@
 %{
 #include <string.h>
 #include "util.h"
-#include "tokens.h"
+#include "y.tab.h"
 #include "errormsg.h"
 
 int charPos=1;
 int commentDepth=0;
+
+/* String handling variables/functions */
+#define BUFSIZE 8192
+char strbuf[BUFSIZE+1];
+char *strptr = NULL;
+unsigned int strlength = 0;
+
+void setup(void)
+{
+	*strbuf = '\0';
+	strlength = 0;
+}
+
+void appendstr(char *str)
+{
+	if ((strlength + strlen(str)) < BUFSIZE) {
+		strcat(strbuf, str);
+		strlength += strlen(str);
+	}
+}
 
 int yywrap(void)
 {
@@ -29,7 +49,7 @@ void adjust(void)
 "/"   {adjust(); return DIVIDE;}
 "/*"  {adjust(); BEGIN(COMMENT); commentDepth++;}
 <COMMENT>{
-	"/*" {adjust; commentDepth++;}
+	"/*" {adjust(); commentDepth++;}
 	"*/" {adjust(); if (--commentDepth == 0) BEGIN(INITIAL);}
 	[^\n] {adjust();}
 	(\n|\r\n)	{adjust(); EM_newline();}
@@ -75,19 +95,19 @@ void adjust(void)
 "|"	  {adjust(); return OR;}
 [0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 
-\" {adjust(); BEGIN(STR); yymore();}
+\" {adjust(); BEGIN(STR); setup();}
 <STR>{
-	\" 			{adjust(); yylval.sval=yytext; BEGIN(INITIAL); return STRING;}
-	\\n			{adjust(); yymore();}
-	\\t			{adjust(); yymore();}
-	\\[0-9]{3}	{adjust(); yymore();}
-	\\^[GHIJLM]	{adjust(); yymore();}
-	\\\\		{adjust(); yymore();}
-	\\\"		{adjust(); yymore();}
-	\\[ \n\t\r\f]+\\ {adjust();yymore(); } /* BUGGY */
+	\" 			{adjust(); yylval.sval=strbuf; BEGIN(INITIAL); return STRING;}
+	\\n			{adjust(); appendstr("\n");}
+	\\t			{adjust(); appendstr("\t");}
+	\\[0-9]{3}	{adjust(); appendstr(yytext);}
+	\\^[GHIJLM]	{adjust(); appendstr(yytext);}
+	\\\\		{adjust(); appendstr(yytext);}
+	\\\"		{adjust(); appendstr(yytext);}
+	\\[ \n\t\r\f]+\\ {adjust();}
 	\\(.|\n)	{adjust(); EM_error(EM_tokPos, "illegal token biatch!");}
 	\n			{adjust(); EM_error(EM_tokPos, "illegal token");}
-	[^\"\\\n]+ 	{adjust(); yymore();}
+	[^\"\\\n]+ 	{adjust(); appendstr(yytext);}
 }
 .	 {adjust(); EM_error(EM_tokPos,"illegal token");}
 %%

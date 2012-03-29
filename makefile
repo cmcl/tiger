@@ -20,7 +20,7 @@ all: $(PARSER_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PROG_NAME)
 	
 lextest: $(LEXER_OBJS)
-	$(COMPILER) $^ $(OPTIONS) $@
+	$(COMPILER) $^ $(OPTIONS) $(LEXER_PROG_NAME)
 	
 $(ODIR)/%.o: $(SDIR)/%.c
 	$(COMPILER) $(CFLAGS) $@ $<

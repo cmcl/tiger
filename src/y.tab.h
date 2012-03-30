@@ -80,7 +80,8 @@
      NIL = 297,
      FUNCTION = 298,
      VAR = 299,
-     TYPE = 300
+     TYPE = 300,
+     UMINUS = 301
    };
 #endif
 /* Tokens.  */
@@ -127,6 +128,7 @@
 #define FUNCTION 298
 #define VAR 299
 #define TYPE 300
+#define UMINUS 301
 
 
 
@@ -145,7 +147,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 149 "src/y.tab.h"
+#line 151 "src/y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

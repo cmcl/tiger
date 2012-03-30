@@ -4,7 +4,7 @@ let
     var N := 8
 
     type intArray = array of int
-
+	
     var row := intArray [ N ] of 0
     var col := intArray [ N ] of 0
     var diag1 := intArray [N+N-1] of 0
@@ -23,10 +23,7 @@ let
      then printboard()
      else for r := 0 to N-1
 	   do if row[r]=0 & diag1[r+c]=0 & diag2[r+7-c]=0
-	           then (row[r]:=1; diag1[r+c]:=1; diag2[r+7-c]:=1;
-		         col[c]:=r;
-	                 try(c+1);
-			 row[r]:=0; diag1[r+c]:=0; diag2[r+7-c]:=0)
+	           then (1)
 
 )
  in try(0)

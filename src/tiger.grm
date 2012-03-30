@@ -31,64 +31,116 @@ void yyerror(char *s)
   FUNCTION VAR TYPE 
 
 %start program
-
+%nonassoc THEN DO TYPE FUNCTION ID
+%nonassoc ASSIGN LBRACK ELSE OF
+%left OR
+%left AND
+%nonassoc EQ NEQ LE LT GT GE
 %left PLUS MINUS
 %left TIMES DIVIDE
-/* TODO: assoc for  LE LT GE GT EQ NEQ AND OR */
+%left UMINUS
 %%
 program:	  exp
 			;
 
-exp:		/* empty */	  
-			| NIL
-			| STRING
-			| intexp
-			| cmpexp
-			| boolexp
-			| LPAREN expseq RPAREN
-			| funcall
-			| arraycreate
+exp:		/* empty */
 			| condexp
-			| LET decs IN expseq END
+			| resultexp
 			| BREAK
 			;
 
-arglist:	  exp
-			| arglist COMMA exp
+resultexp:	  assignexp
+			| letexp
 			;
-
-arraycreate:  ID LBRACK exp RBRACK OF exp
-			;
-
-boolexp:	  exp AND exp
-			| exp OR exp
 			
-cmpexp:		  exp LT exp
-			| exp GT exp
-			| exp LE exp
-			| exp GE exp
-			| exp EQ exp
-			| exp NEQ exp
-
-condexp:	  IF intexp THEN exp ELSE exp
-			| WHILE boolexp DO exp
-			| FOR ID ASSIGN intexp TO intexp DO exp
+arraycreate:  ID LBRACK resultexp RBRACK OF exp
 			;
-intexp:		  INT
+			
+recocreate:	  ID LBRACE arglist RBRACE
+			;
+
+letexp:		  LET decs IN expseq END
+			;
+
+arglist:	/* empty */
+			| nonarglist
+			;
+			
+nonarglist:   eqexp
+			| nonarglist COMMA eqexp
+			;
+			
+assignexp:	  orexp
+			| lvalue ASSIGN assignexp
+			;
+
+
+orexp:		  andexp
+			| orexp OR andexp
+			;
+			
+andexp:		  eqexp
+			| andexp AND eqexp
+			;
+			
+eqexp:		  cmpexp
+			| eqexp EQ cmpexp
+			| eqexp NEQ cmpexp
+			;
+
+cmpexp:		  addexp
+			| arraycreate
+			| recocreate
+			| cmpexp LT addexp
+			| cmpexp GT addexp
+			| cmpexp LE addexp
+			| cmpexp GE addexp
+			;
+addexp:		  mulexp
+			| addexp PLUS mulexp
+			| addexp MINUS mulexp
+			;
+			
+mulexp:		  unaryexp
+			| mulexp TIMES unaryexp
+			| mulexp DIVIDE unaryexp
+			;
+			
+unaryexp:	  postexp
+			| MINUS unaryexp %prec MINUS
+			;
+			
+postexp:	  primexp
 			| lvalue
-			| intexp PLUS intexp
-			| intexp MINUS intexp
-			| intexp TIMES intexp
-			| intexp DIVIDE intexp
+			| funcall
+			;
+			
+primexp:	  INT
+			| STRING
+			| NIL
+			| LPAREN expseq RPAREN
 			;
 
 funcall:	  ID LPAREN arglist RPAREN
+			;
+			
+lvalue:		  ID
+			| ID LBRACK resultexp RBRACK %prec LBRACK
+			| lvalue LBRACK resultexp RBRACK
+			| lvalue DOT ID
 			;
 
 expseq:		  exp
 			| expseq SEMICOLON exp
 			;
 
+			
+condexp:	  IF orexp THEN exp ELSE exp
+			| IF orexp THEN exp
+			| WHILE orexp DO exp
+			| FOR ID ASSIGN orexp TO orexp DO exp
+			;
+			
 decs:		/* empty */
 			| decs dec
 			;
@@ -98,10 +150,6 @@ dec:		  tydec
 			| fundec
 			;
 			
-lvalue:		  ID
-			| lvalue DOT ID
-			| lvalue LBRACK exp RBRACK
-
 tydec:		  TYPE ID EQ ty
 			;
 

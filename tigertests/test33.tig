@@ -1,6 +1,8 @@
 /* error : unknown type */
 let
+	type ar = array of int
+	var b := ar [10] of 0
 	var a:= rectype {}
 in
-	0
+	ar [10] of 0 = ar [10] of 0
 end

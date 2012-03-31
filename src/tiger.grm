@@ -40,23 +40,38 @@ void yyerror(char *s)
 %left TIMES DIVIDE
 %left UMINUS
 %%
-program:	  exp
+program:	  primyexp
 			;
 
-exp:		/* empty */
+primyexp:	/* empty */
+			| exp
+			;
+
+exp:		  INT
+			| STRING
+			| NIL
+			| ID LPAREN arglist RPAREN
+			| lvalue
+			| LPAREN expseq RPAREN
 			| condexp
-			| resultexp
-			| BREAK
-			;
-
-resultexp:	  assignexp
 			| letexp
-			;
-			
-arraycreate:  ID LBRACK resultexp RBRACK OF exp
-			;
-			
-recocreate:	  ID LBRACE arglist RBRACE
+			| exp OR exp
+			| exp AND exp
+			| exp LT exp
+			| exp GT exp
+			| exp LE exp
+			| exp GE exp
+			| exp PLUS exp
+			| exp MINUS exp
+			| exp TIMES exp
+			| exp DIVIDE exp
+			| exp EQ exp
+			| exp NEQ exp
+			| ID LBRACK exp RBRACK OF exp
+			| ID LBRACE arglist RBRACE
+			| lvalue ASSIGN exp
+			| MINUS exp %prec UMINUS
+			| BREAK
 			;
 
 letexp:		  LET decs IN expseq END
@@ -66,79 +81,25 @@ arglist:	/* empty */
 			| nonarglist
 			;
 			
-nonarglist:   eqexp
-			| nonarglist COMMA eqexp
-			;
-			
-assignexp:	  orexp
-			| lvalue ASSIGN assignexp
-			;
-
-
-orexp:		  andexp
-			| orexp OR andexp
-			;
-			
-andexp:		  eqexp
-			| andexp AND eqexp
-			;
-			
-eqexp:		  cmpexp
-			| eqexp EQ cmpexp
-			| eqexp NEQ cmpexp
-			;
-
-cmpexp:		  addexp
-			| arraycreate
-			| recocreate
-			| cmpexp LT addexp
-			| cmpexp GT addexp
-			| cmpexp LE addexp
-			| cmpexp GE addexp
-			;
-addexp:		  mulexp
-			| addexp PLUS mulexp
-			| addexp MINUS mulexp
-			;
-			
-mulexp:		  unaryexp
-			| mulexp TIMES unaryexp
-			| mulexp DIVIDE unaryexp
-			;
-			
-unaryexp:	  postexp
-			| MINUS unaryexp %prec MINUS
-			;
-			
-postexp:	  primexp
-			| lvalue
-			| funcall
-			;
-			
-primexp:	  INT
-			| STRING
-			| NIL
-			| LPAREN expseq RPAREN
-			;
-
-funcall:	  ID LPAREN arglist RPAREN
+nonarglist:   exp
+			| nonarglist COMMA exp
 			;
 			
 lvalue:		  ID
-			| ID LBRACK resultexp RBRACK %prec LBRACK
-			| lvalue LBRACK resultexp RBRACK
+			| ID LBRACK exp RBRACK
+			| lvalue LBRACK exp RBRACK
 			| lvalue DOT ID
 			;
 
-expseq:		  exp
-			| expseq SEMICOLON exp
+expseq:		  primyexp
+			| expseq SEMICOLON primyexp
 			;
 
 			
-condexp:	  IF orexp THEN exp ELSE exp
-			| IF orexp THEN exp
-			| WHILE orexp DO exp
-			| FOR ID ASSIGN orexp TO orexp DO exp
+condexp:	  IF exp THEN exp ELSE exp
+			| IF exp THEN exp
+			| WHILE exp DO exp
+			| FOR ID ASSIGN exp TO exp DO exp
 			;
 			
 decs:		/* empty */

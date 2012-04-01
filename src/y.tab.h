@@ -81,7 +81,8 @@
      FUNCTION = 298,
      VAR = 299,
      TYPE = 300,
-     UMINUS = 301
+     LOW = 301,
+     UMINUS = 302
    };
 #endif
 /* Tokens.  */
@@ -128,7 +129,8 @@
 #define FUNCTION 298
 #define VAR 299
 #define TYPE 300
-#define UMINUS 301
+#define LOW 301
+#define UMINUS 302
 
 
 
@@ -138,16 +140,31 @@ typedef union YYSTYPE
 {
 
 /* Line 1685 of yacc.c  */
-#line 15 "src/tiger.grm"
+#line 16 "src/tiger.grm"
 
 	int pos;
 	int ival;
 	string sval;
-	
+	S_symbol sym;
+	A_var var;
+	A_exp exp;
+	A_dec dec;
+	A_ty ty;
+	A_decList decList;
+	A_expList expList;
+	A_field field;
+	A_fieldList fieldList;
+	A_fundec fundec;
+	A_fundecList fundecList;
+	A_namety namety;
+	A_nametyList nametyList;
+	A_efield efield;
+	A_efieldList efieldList;
+
 
 
 /* Line 1685 of yacc.c  */
-#line 151 "src/y.tab.h"
+#line 168 "src/y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

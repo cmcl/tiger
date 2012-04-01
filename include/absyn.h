@@ -4,6 +4,9 @@
  * All types and functions declared in this header file begin with "A_"
  * Linked list types end with "..list"
  */
+#ifndef _ABSYN_H_
+#define _ABSYN_H_
+#include "symbol.h"
 
 /* Type Definitions */
 
@@ -133,3 +136,7 @@ A_namety A_Namety(S_symbol name, A_ty ty);
 A_nametyList A_NametyList(A_namety head, A_nametyList tail);
 A_efield A_Efield(S_symbol name, A_exp exp);
 A_efieldList A_EfieldList(A_efield head, A_efieldList tail);
+
+extern A_exp absyn_root;
+
+#endif /* _ABSYN_H_ */

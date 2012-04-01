@@ -6,7 +6,8 @@
  *  each module should make "wrapper" functions that take
  *  well-typed arguments and call the TAB_ functions.
  */
-
+#ifndef _TABLE_H_
+#define _TABLE_H_
 typedef struct TAB_table_ *TAB_table;
 
 /* Make a new table mapping "keys" to "values". */
@@ -29,4 +30,4 @@ void *TAB_pop(TAB_table t);
  *  recent binding of any key to the oldest binding in the table */
 void TAB_dump(TAB_table t, void (*show)(void *key, void *value));
 
-
+#endif /* _TABLE_H_ */

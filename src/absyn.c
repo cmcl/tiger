@@ -2,10 +2,12 @@
  * absyn.c - Abstract Syntax Functions. Most functions create an instance of an
  *           abstract syntax rule.
  */
-
+#include <stdlib.h>
 #include "util.h"
 #include "symbol.h"	/* symbol table data structures */
 #include "absyn.h"	/* abstract syntax data structures */
+
+A_exp absyn_root = NULL;
 
 A_var A_SimpleVar(A_pos pos, S_symbol sym)
 {

@@ -11,16 +11,22 @@ OPTIONS=-o
 LEXER_OBJECTS= driver.o lex.yy.o errormsg.o util.o
 PARSER_OBJECTS= parsetest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o
 PARSE_OBJECTS= parse.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o
+SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o env.o semant.o types.o
 PARSE_OBJS = $(patsubst %,$(ODIR)/%,$(PARSE_OBJECTS))
+SEM_OBJS = $(patsubst %,$(ODIR)/%,$(SEM_OBJECTS))
 PARSER_OBJS = $(patsubst %,$(ODIR)/%,$(PARSER_OBJECTS))
 LEXER_OBJS = $(patsubst %,$(ODIR)/%,$(LEXER_OBJECTS))
 
 PROG_NAME=$(BDIR)/parse
+SEM_PROG_NAME=$(BDIR)/semantest
 PARSER_PROG_NAME=$(BDIR)/parsertest
 LEXER_PROG_NAME=$(BDIR)/lextest
 
 all: $(PARSE_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PROG_NAME)
+	
+semantest: $(SEM_OBJS)
+	$(COMPILER) $^ $(OPTIONS) $(SEM_PROG_NAME)
 
 parsertest: $(PARSER_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PARSER_PROG_NAME)
@@ -48,4 +54,4 @@ $(SDIR)/y.tab.c: $(SDIR)/tiger.grm
 
 
 clean:
-	rm -f $(ODIR)/*.o $(PROG_NAME) $(PARSER_PROG_NAME) $(LEXER_PROG_NAME)
+	rm -f $(ODIR)/*.o $(PROG_NAME) $(PARSER_PROG_NAME) $(LEXER_PROG_NAME) $(SEM_PROG_NAME)

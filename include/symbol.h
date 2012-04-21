@@ -5,6 +5,7 @@
 #ifndef _SYMBOL_H_
 #define _SYMBOL_H_
 
+#include "util.h"
 #include "table.h"
 
 typedef struct S_symbol_ *S_symbol;

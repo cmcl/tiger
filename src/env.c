@@ -1,7 +1,9 @@
+#include "util.h"
 #include "env.h"
+#include <stdlib.h>
 
-S_table tenv = S_empty();
-S_table venv = S_empty();
+S_table tenv = NULL;
+S_table venv = NULL;
 
 E_enventry E_VarEntry(Ty_ty ty)
 {
@@ -22,10 +24,15 @@ E_enventry E_FunEntry(Ty_tyList formals, Ty_ty result)
 
 S_table E_base_tenv(void)
 {
+	tenv = S_empty();
 	S_enter(tenv, S_Symbol("int"), Ty_Int());
 	S_enter(tenv, S_Symbol("string"), Ty_String());
+	return tenv;
 }
 
 S_table E_base_venv(void)
 {
+	venv = S_empty();
+	/* TODO: Add some function definitions here */
+	return venv;
 }

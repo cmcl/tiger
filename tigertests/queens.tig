@@ -23,7 +23,7 @@ let
      then printboard()
      else for r := 0 to N-1
 	   do if row[r]=0 & diag1[r+c]=0 & diag2[r+7-c]=0
-	           then (1)
+	           then ()
 
 )
  in try(0)

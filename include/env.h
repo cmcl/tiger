@@ -4,8 +4,6 @@
 #include "types.h"
 #include "symbol.h"
 
-extern S_table tenv, venv;
-
 typedef struct E_enventry_ *E_enventry;
 
 struct E_enventry_ {

@@ -76,10 +76,11 @@ static char error_str_ty[][12] = {
 	"record", "nil", "int", "string",
 	"array", "name", "void"};
 
-/* This will infinite loop on mutually recursive types */
-char *Ty_ToString(int typeKind)
+char *Ty_ToString(Ty_ty t)
 {
-	return error_str_ty[typeKind];
+	if (t->kind == Ty_name)
+		return S_name(t->u.name.sym);
+	return error_str_ty[t->kind];
 }
 
 /* This will infinite loop on mutually recursive types */

@@ -1,5 +1,14 @@
 let
-	var a := nil
+	var v:string := "Hello, World!\n"
+	function f(j: int) =
+		print(v)
 in
-	if nil = nil then ()
+	let
+		function u(l: string) =
+			(print(v);print(l))
+	in
+		u(v);
+		f(u)
+	end;
+	u("HW!")
 end

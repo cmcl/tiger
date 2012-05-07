@@ -11,7 +11,8 @@ OPTIONS=-o
 LEXER_OBJECTS= driver.o lex.yy.o errormsg.o util.o
 PARSER_OBJECTS= parsetest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o
 PARSE_OBJECTS= parse.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o
-SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o env.o semant.o types.o
+SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o env.o semant.o \
+	types.o temp.o translate.o frame.o tree.o
 PARSE_OBJS = $(patsubst %,$(ODIR)/%,$(PARSE_OBJECTS))
 SEM_OBJS = $(patsubst %,$(ODIR)/%,$(SEM_OBJECTS))
 PARSER_OBJS = $(patsubst %,$(ODIR)/%,$(PARSER_OBJECTS))
@@ -38,6 +39,9 @@ $(ODIR)/%.o: $(SDIR)/%.c
 	$(COMPILER) $(CFLAGS) $@ $<
 	
 $(ODIR)/%.o: $(TESTDIR)/%.c
+	$(COMPILER) $(CFLAGS) $@ $<
+
+$(ODIR)/frame.o: $(SDIR)/amd64frame.c
 	$(COMPILER) $(CFLAGS) $@ $<
 
 $(ODIR)/lex.yy.o: $(SDIR)/lex.yy.c

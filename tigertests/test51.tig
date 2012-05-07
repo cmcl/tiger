@@ -1,0 +1,16 @@
+let
+	type someType = {i: int}
+	var v:someType := nil
+	function f(v: int): someType =
+		(let
+			type a = int
+			type b = string
+			var i:a := 5
+			var s:b := "hello, world!"
+		in
+			print(s)
+		end;
+		someType {i=5})
+in
+	v := f(5)
+end

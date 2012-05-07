@@ -112,7 +112,8 @@ reclist:	/* empty */							{$$=NULL;}
 nonreclist:	  id EQ exp							{$$=A_EfieldList(A_Efield($1, $3), NULL);}
 			| id EQ exp	COMMA nonreclist		{$$=A_EfieldList(A_Efield($1, $3), $5);}
 
-letexp:		  LET decs IN expseq END			{$$=A_LetExp(EM_tokPos, $2, $4->head);}
+letexp:		  LET decs IN expseq END			{$$=A_LetExp(EM_tokPos, $2, 
+														A_SeqExp(EM_tokPos, $4));}
 			;
 
 arglist:	/* empty */							{$$=NULL;}

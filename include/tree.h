@@ -41,8 +41,8 @@ struct T_exp_ {enum {T_BINOP, T_MEM, T_TEMP, T_ESEQ, T_NAME,
 		   } u;
 	    };
 
-T_expList T_ExpList (T_exp head, T_expList tail);
-T_stmList T_StmList (T_stm head, T_stmList tail);
+T_expList T_ExpList(T_exp head, T_expList tail);
+T_stmList T_StmList(T_stm head, T_stmList tail);
 
 T_stm T_Seq(T_stm left, T_stm right);
 T_stm T_Label(Temp_label);

@@ -43,10 +43,11 @@ static F_accessList makeFormalAccessList(F_frame f, U_boolList formals)
 	U_boolList fmls;
 	F_accessList headList = NULL, tailList = NULL;
 	int i = 1;
-	for (fmls = formals; fmls; fmls = fmls->tail, i++) {
+	for (fmls = formals; fmls; fmls = fmls->tail) {
 		F_access access = NULL;
 		if (i <= F_K && !fmls->head) {
 			access = InReg(Temp_newtemp());
+			i++;
 		} else {
 			/* Add 1 for return address space. */
 			access = InFrame((1 + i) * F_WORD_SIZE);
@@ -104,12 +105,32 @@ F_access F_allocLocal(F_frame f, bool escape)
 	return InReg(Temp_newtemp());
 }
 
+F_frag F_StringFrag(Temp_label label, string str)
+{
+	return NULL;
+}
+
+F_frag F_ProcFrag(T_stm body, F_frame frame)
+{
+	return NULL;
+}
+
+F_fragList F_FragList(F_frag head, F_fragList tail)
+{
+	return NULL;
+}
+
 static Temp_temp fp = NULL;
 Temp_temp F_FP(void)
 {
 	if (!fp)
 		fp = Temp_newtemp();
 	return fp;
+}
+
+Temp_temp F_RV(void)
+{
+	return Temp_newtemp();
 }
 
 T_exp F_Exp(F_access access, T_exp framePtr)
@@ -121,4 +142,8 @@ T_exp F_Exp(F_access access, T_exp framePtr)
 	}
 }
 
+T_stm F_procEntryExit1(F_frame frame, T_stm stm)
+{
+	return stm; // dummy implementation
+}
 

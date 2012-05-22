@@ -36,6 +36,7 @@ Tr_exp Tr_fieldVar(Tr_exp recordBase, int fieldOffset);
 Tr_exp Tr_subscriptVar(Tr_exp arrayBase, Tr_exp index);
 
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
+Tr_exp Tr_recordExp(void); /* provisional */
 Tr_exp Tr_letExp(void); /* provisional */
 
 /*
@@ -47,8 +48,7 @@ Tr_exp Tr_doneExp(void); /* for while/for loops */
 Tr_exp Tr_breakExp(Tr_exp breakk);
 Tr_exp Tr_whileExp(Tr_exp test, Tr_exp done, Tr_exp body);
 Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee);
-Tr_exp Tr_assignExp(Tr_exp var, Tr_exp exp); /* provisional */
-Tr_exp Tr_recordExp(void); /* provisional */
+Tr_exp Tr_assignExp(Tr_exp var, Tr_exp exp);
 
 /*
  * Function for + - * / operators

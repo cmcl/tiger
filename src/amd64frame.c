@@ -107,17 +107,27 @@ F_access F_allocLocal(F_frame f, bool escape)
 
 F_frag F_StringFrag(Temp_label label, string str)
 {
-	return NULL;
+	F_frag strfrag = checked_malloc(sizeof(*strfrag));
+	strfrag->kind = F_stringFrag;
+	strfrag->u.stringg.label = label;
+	strfrag->u.stringg.str = str;
+	return strfrag;
 }
 
 F_frag F_ProcFrag(T_stm body, F_frame frame)
 {
-	return NULL;
+	F_frag pfrag = checked_malloc(sizeof(*pfrag));
+	pfrag->u.proc.body = body;
+	pfrag->u.proc.frame = frame;
+	return pfrag;
 }
 
 F_fragList F_FragList(F_frag head, F_fragList tail)
 {
-	return NULL;
+	F_fragList fl = checked_malloc(sizeof(*fl));
+	fl->head = head;
+	fl->tail = tail;
+	return fl;
 }
 
 static Temp_temp fp = NULL;
@@ -128,9 +138,12 @@ Temp_temp F_FP(void)
 	return fp;
 }
 
+static Temp_temp rv = NULL;
 Temp_temp F_RV(void)
 {
-	return Temp_newtemp();
+	if (!rv)
+		rv = Temp_newtemp();
+	return rv;
 }
 
 T_exp F_Exp(F_access access, T_exp framePtr)
@@ -140,6 +153,11 @@ T_exp F_Exp(F_access access, T_exp framePtr)
 	} else {
 		return T_Temp(access->u.reg);
 	}
+}
+
+T_exp F_externalCall(string str, T_expList args)
+{
+	return T_Call(T_Name(Temp_namedlabel(str)), args);
 }
 
 T_stm F_procEntryExit1(F_frame frame, T_stm stm)

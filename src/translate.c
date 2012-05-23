@@ -50,8 +50,17 @@ struct patchList_ {
 	patchList tail;
 };
 
+/* Frag list */
+static F_fragList fragList = NULL;
+
 static Tr_accessList makeFormalAccessList(Tr_level level);
 static Tr_access Tr_Access(Tr_level level, F_access access);
+
+/*
+ * Function returns a tree expression list
+ * with the same ordering of elements as the argument list.
+ * (i.e. this function preserves ordering)
+ */
 static T_expList Tr_ExpList_convert(Tr_expList list);
 
 /* Return address of static link */
@@ -339,6 +348,15 @@ static T_expList Tr_ExpList_convert(Tr_expList list)
 	return eList;
 }
 
+Tr_exp Tr_seqExp(Tr_expList list)
+{
+	T_exp result = unEx(list->head->expr);
+	Tr_node p;
+	for (p = list->head->next; p; p = p->next)
+		result = T_Eseq(T_Exp(unEx(p->expr)), result);
+	return Tr_Ex(result);
+}
+
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level)
 {
 	T_exp addr = T_Temp(F_FP());
@@ -372,6 +390,15 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 Tr_exp Tr_recordExp(void)
 {
 	return NULL;
+}
+
+Tr_exp Tr_letExp(Tr_expList list)
+{
+	T_exp result = unEx(list->head->expr); // result of executing let body
+	Tr_node p;
+	for (p = list->head->next; p; p = p->next)
+		result = T_Eseq(T_Exp(unEx(p->expr)), result);
+	return Tr_Ex(result);
 }
 
 Tr_exp Tr_doneExp(void)
@@ -506,4 +533,15 @@ Tr_exp Tr_nilExp(void)
 Tr_exp Tr_noExp(void)
 {
 	return Tr_Ex(T_Const(0));
+}
+
+void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals)
+{
+	F_frag pfrag = F_ProcFrag(unNx(body), level->frame);
+	fragList = F_FragList(pfrag, fragList);
+}
+
+F_fragList Tr_getResult(void)
+{
+	return fragList;
 }

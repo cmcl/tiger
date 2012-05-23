@@ -212,15 +212,18 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 					EM_error(recList->head->exp->pos, "type error: given %s but expected %s",
 						Ty_ToString(e.ty), Ty_ToString(fieldTys->head->ty)); 
 			}
-			return expTy(NULL, typ);
+			return expTy(Tr_recordExp(), typ);
 		}
 		case A_seqExp:
 		{
-			struct expty exp = expTy(NULL, Ty_Void()); /* empty seq case */
+			struct expty expr = expTy(NULL, Ty_Void()); /* empty seq case */
 			A_expList seq;
-			for (seq = a->u.seq; seq; seq = seq->tail)
-				exp = transExp(level, venv, tenv, breakk, seq->head);
-			return exp;
+			Tr_expList list = Tr_ExpList();
+			for (seq = a->u.seq; seq; seq = seq->tail) {
+				expr = transExp(level, venv, tenv, breakk, seq->head);
+				Tr_ExpList_prepend(list, expr.exp); // last expr is result of expression
+			}
+			return expTy(Tr_seqExp(list), expr.ty);
 		}
 		case A_assignExp:
 		{
@@ -297,16 +300,18 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 		}
 		case A_letExp:
 		{
-			struct expty exp;
+			struct expty expr;
 			A_decList d;
+			Tr_expList list = Tr_ExpList();
 			S_beginScope(venv);
 			S_beginScope(tenv);
 			for (d = a->u.let.decs; d; d = d->tail)
-				transDec(level, venv, tenv, breakk, d->head);
-			exp = transExp(level, venv, tenv, breakk, a->u.let.body);
+				Tr_ExpList_prepend(list, transDec(level, venv, tenv, breakk, d->head));
+			expr = transExp(level, venv, tenv, breakk, a->u.let.body);
+			Tr_ExpList_prepend(list, expr.exp); // need result of let at the beginning
 			S_endScope(venv);
 			S_endScope(tenv);
-			return exp;
+			return expTy(Tr_seqExp(list), expr.ty);
 		}
 		case A_arrayExp:
 		{
@@ -511,7 +516,7 @@ static Tr_exp transDec(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk
 					EM_error(d->u.var.init->pos, "illegal use nil expression");
 				S_enter(venv, d->u.var.var, E_VarEntry(access, e.ty));
 			}
-			return e.exp;
+			return Tr_assignExp(Tr_simpleVar(access, level), e.exp);
 		}
 		case A_typeDec:
 		{

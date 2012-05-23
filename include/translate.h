@@ -39,13 +39,26 @@ void Tr_ExpList_append(Tr_expList list, Tr_exp expr);
  */
 void Tr_ExpList_prepend(Tr_expList list, Tr_exp expr);
 
+/*
+ * Translates a sequence of expressions
+ * This function requires the result, of executing the body
+ * of the let expression, to be the first element.
+ */
+Tr_exp Tr_seqExp(Tr_expList list);
+
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
 Tr_exp Tr_fieldVar(Tr_exp recordBase, int fieldOffset);
 Tr_exp Tr_subscriptVar(Tr_exp arrayBase, Tr_exp index);
 
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
 Tr_exp Tr_recordExp(void); /* provisional */
-Tr_exp Tr_letExp(void); /* provisional */
+
+/*
+ * Takes an expression list representing the let expression.
+ * This function requires the result, of executing the body
+ * of the let expression, to be the first element.
+ */
+Tr_exp Tr_letExp(Tr_expList list);
 
 /*
  * Returns some linking information to be presented to

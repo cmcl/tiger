@@ -92,6 +92,8 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			A_expList args = NULL;
 			Ty_tyList formals;
 			E_enventry x = S_look(venv, a->u.call.func);
+			Tr_exp translation = NULL;
+			Tr_expList argList = Tr_ExpList();
 			if (x && x->kind == E_funEntry) {
 				// check type of formals
 				formals = x->u.fun.formals;
@@ -107,10 +109,11 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 					EM_error(a->pos, "not enough arguments");
 				else if (args != NULL && formals == NULL)
 					EM_error(a->pos, "too many arguments");
-				return expTy(NULL, actual_ty(x->u.fun.result));
+				translation = Tr_callExp(level, x->u.fun.level, x->u.fun.label, argList);
+				return expTy(translation, actual_ty(x->u.fun.result));
 			} else {
 				EM_error(a->pos, "undefined function %s", S_name(a->u.call.func));
-				return expTy(NULL, Ty_Int());
+				return expTy(translation, Ty_Int());
 			}
 		}
 		case A_opExp:

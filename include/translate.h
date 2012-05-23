@@ -6,13 +6,8 @@
 #include "temp.h"
 #include "frame.h"
 
-typedef struct Tr_exp_ *Tr_exp;/*
+typedef struct Tr_exp_ *Tr_exp;
 typedef struct Tr_expList_ *Tr_expList;
-
-struct Tr_expList_ {
-	Tr_exp head;
-	Tr_expList tail;
-};*/
 
 typedef struct patchList_ *patchList;
 
@@ -30,6 +25,19 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals);
 Tr_access Tr_allocLocal(Tr_level level, bool escape);
 Tr_accessList Tr_formals(Tr_level level);
 Tr_accessList Tr_AccessList(Tr_access head, Tr_accessList tail);
+
+Tr_expList Tr_ExpList(void);
+/*
+ * Add the translation expression to the end of the
+ * list.
+ */
+void Tr_ExpList_append(Tr_expList list, Tr_exp expr);
+
+/*
+ * Add the translation expression to the front of the
+ * list.
+ */
+void Tr_ExpList_prepend(Tr_expList list, Tr_exp expr);
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
 Tr_exp Tr_fieldVar(Tr_exp recordBase, int fieldOffset);
@@ -60,7 +68,7 @@ Tr_exp Tr_arithExp(A_oper op, Tr_exp left, Tr_exp right);
  */
 Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right);
 
-//Tr_exp Tr_callExp(Temp_label funLabel, Tr_expList argList);
+Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList);
 Tr_exp Tr_stringExp(string str);
 Tr_exp Tr_intExp(int n);
 Tr_exp Tr_nilExp(void); /* provisional */

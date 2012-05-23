@@ -6,6 +6,8 @@
 #include "translate.h"
 #include "tree.h"
 
+typedef struct Tr_node_ *Tr_node;
+
 struct Tr_level_ {
 	Tr_level parent;
 	Temp_label name;
@@ -33,6 +35,16 @@ struct Tr_exp_ {
 	} u;
 };
 
+struct Tr_expList_ {
+	Tr_node head; /* points to first element in list */
+	Tr_node tail; /* points to last element in list */
+};
+
+struct Tr_node_ {
+	Tr_exp expr;
+	Tr_node next;
+};
+
 struct patchList_ {
 	Temp_label *head;
 	patchList tail;
@@ -40,6 +52,10 @@ struct patchList_ {
 
 static Tr_accessList makeFormalAccessList(Tr_level level);
 static Tr_access Tr_Access(Tr_level level, F_access access);
+static T_expList Tr_ExpList_convert(Tr_expList list);
+
+/* Return address of static link */
+static Tr_exp Tr_StaticLink(Tr_level funLevel, Tr_level level); 
 
 static Tr_exp Tr_Ex(T_exp ex);
 static Tr_exp Tr_Nx(T_stm nx);
@@ -215,12 +231,25 @@ static patchList PatchList(Temp_label *head, patchList tail)
 	return pList;
 }
 
-Tr_access Tr_Access(Tr_level level, F_access access)
+static Tr_access Tr_Access(Tr_level level, F_access access)
 {
 	Tr_access trAccess = checked_malloc(sizeof(*trAccess));
 	trAccess->level = level;
 	trAccess->access = access;
 	return trAccess;
+}
+
+static Tr_exp Tr_StaticLink(Tr_level funLevel, Tr_level level)
+{
+	T_exp addr = T_Temp(F_FP());
+	/* Follow static links until we reach level of defintion */
+	while (level != funLevel) {
+		/* Static link is the first frame formal */
+		F_access staticLink = F_formals(level->frame)->head;
+		addr = F_Exp(staticLink, addr);
+		level = level->parent;
+	}
+	return Tr_Ex(T_Mem(addr));
 }
 
 /*
@@ -258,6 +287,58 @@ Tr_accessList Tr_AccessList(Tr_access head, Tr_accessList tail)
 	return list;
 }
 
+Tr_expList Tr_ExpList(void)
+{
+	Tr_expList list = checked_malloc(sizeof(*list));
+	list->head = NULL;
+	list->tail = NULL;
+	return list;
+
+}
+
+void Tr_ExpList_append(Tr_expList list, Tr_exp expr)
+{
+	if (list->head) {
+		Tr_node node = checked_malloc(sizeof(*node));
+		node->expr = expr;
+		node->next = NULL;
+		list->tail->next = node;
+		list->tail = list->tail->next;
+	} else Tr_ExpList_prepend(list, expr);
+}
+
+void Tr_ExpList_prepend(Tr_expList list, Tr_exp expr)
+{
+	if (list->head) {
+		Tr_node node = checked_malloc(sizeof(*node));
+		node->expr = expr;
+		node->next = list->head;
+		list->head = node;
+	} else {
+		list->head = checked_malloc(sizeof(*list->head));
+		list->head->expr = expr;
+		list->head->next = NULL;
+		list->tail = list->head;
+	}
+}
+
+static T_expList Tr_ExpList_convert(Tr_expList list)
+{
+	T_expList eList = NULL;
+	T_expList tailList = NULL;
+	Tr_node iter = list->head;
+	for (; iter ; iter = iter->next) {
+		if (eList) {
+			tailList->tail = T_ExpList(unEx(iter->expr), NULL);
+			tailList = tailList->tail;
+		} else {
+			eList = T_ExpList(unEx(iter->expr), NULL);
+			tailList = eList;
+		}
+	}
+	return eList;
+}
+
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level)
 {
 	T_exp addr = T_Temp(F_FP());
@@ -284,7 +365,8 @@ Tr_exp Tr_subscriptVar(Tr_exp arrayBase, Tr_exp index)
 
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 {
-	return F_externalCall(String("initArray"), T_ExpList(size, T_ExpList(init, NULL)));
+	return Tr_Ex(F_externalCall(String("initArray"),
+			T_ExpList(unEx(size), T_ExpList(unEx(init), NULL))));
 }
 
 Tr_exp Tr_recordExp(void)
@@ -395,10 +477,12 @@ Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right)
 	return Tr_Cx(trues, falses, cond);
 }
 
-/*Tr_exp Tr_callExp(Temp_label funLabel, Tr_expList argList)
+Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList)
 {
-	return Tr_Ex(T_Call(T_Name(funLabel), T_expList));
-}*/
+	Tr_ExpList_prepend(argList, Tr_StaticLink(funLevel, level));
+	T_expList args = Tr_ExpList_convert(argList);
+	return Tr_Ex(T_Call(T_Name(funLabel), args));
+}
 
 static F_fragList stringFragList = NULL;
 Tr_exp Tr_stringExp(string str)

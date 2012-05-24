@@ -51,7 +51,7 @@ Tr_exp Tr_fieldVar(Tr_exp recordBase, int fieldOffset);
 Tr_exp Tr_subscriptVar(Tr_exp arrayBase, Tr_exp index);
 
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
-Tr_exp Tr_recordExp(void); /* provisional */
+Tr_exp Tr_recordExp(int n, Tr_expList list);
 
 /*
  * Takes an expression list representing the let expression.

@@ -203,16 +203,19 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 				EM_error(a->pos, "%s is not a record type", S_name(a->u.record.typ));
 			Ty_fieldList fieldTys = typ->u.record;
 			A_efieldList recList;
+			Tr_expList list = Tr_ExpList();
+			int n = 0;
 			for (recList = a->u.record.fields; recList;
-					recList = recList->tail, fieldTys = fieldTys->tail) {
+					recList = recList->tail, fieldTys = fieldTys->tail, n++) {
 				struct expty e = transExp(level, venv, tenv, breakk, recList->head->exp);
 				if (recList->head->name != fieldTys->head->name)
 					EM_error(a->pos, "%s not a valid field name", recList->head->name);
 				if (!is_equal_ty(fieldTys->head->ty, e.ty))
 					EM_error(recList->head->exp->pos, "type error: given %s but expected %s",
-						Ty_ToString(e.ty), Ty_ToString(fieldTys->head->ty)); 
+						Ty_ToString(e.ty), Ty_ToString(fieldTys->head->ty));
+				Tr_ExpList_prepend(list, e.exp);
 			}
-			return expTy(Tr_recordExp(), typ);
+			return expTy(Tr_recordExp(n, list), typ);
 		}
 		case A_seqExp:
 		{

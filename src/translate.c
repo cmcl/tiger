@@ -387,9 +387,19 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 			T_ExpList(unEx(size), T_ExpList(unEx(init), NULL))));
 }
 
-Tr_exp Tr_recordExp(void)
+Tr_exp Tr_recordExp(int n, Tr_expList list)
 {
-	return NULL;
+	Temp_temp r = Temp_newtemp();
+	T_stm alloc = T_Move(T_Temp(r),
+		F_externalCall(String("initRecoard"), T_ExpList(T_Const(n * F_WORD_SIZE), NULL)));
+	int i = n - 1;
+	Tr_node p = list->head->next;
+	T_stm seq = T_Move(T_Mem(T_Binop(T_plus, T_Temp(r), T_Const(i-- * F_WORD_SIZE))),
+			unEx(list->head->expr));
+	for (; p; p = p->next, i--)
+		seq = T_Seq(T_Move(T_Mem(T_Binop(T_plus, T_Temp(r), T_Const(i * F_WORD_SIZE))),
+				unEx(p->expr)), seq);
+	return Tr_Ex(T_Eseq(T_Seq(alloc, seq), T_Temp(r)));
 }
 
 Tr_exp Tr_letExp(Tr_expList list)

@@ -1,5 +1,5 @@
-#ifndef _SEMANT_H_
-#define _SEMANT_H_
+#ifndef TIGER_SEMANT_H_
+#define TIGER_SEMANT_H_
 
 #include "absyn.h"
 #include "types.h"
@@ -9,4 +9,4 @@ struct expty {Tr_exp exp; Ty_ty ty;};
 
 void SEM_transProg(A_exp exp);
 
-#endif /* _SEMANT_H_ */
+#endif /* TIGER_SEMANT_H_ */

@@ -1,5 +1,5 @@
-#ifndef _ENV_H_
-#define _ENV_H_
+#ifndef TIGER_ENV_H_
+#define TIGER_ENV_H_
 
 #include "types.h"
 #include "translate.h"
@@ -30,4 +30,4 @@ E_enventry E_FunEntry(Tr_level level, Temp_label label, Ty_tyList formals, Ty_ty
 S_table E_base_tenv(void);	/* Ty_ty environment */
 S_table E_base_venv(void);	/* E_ enventry environment */
 
-#endif /* _ENV_H_ */
+#endif /* TIGER_ENV_H_ */

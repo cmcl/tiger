@@ -4,8 +4,8 @@
  * All types and functions declared in this header file begin with "Ty_"
  * Linked list types end with "..list"
  */
-#ifndef _TYPES_H_
-#define _TYPES_H_
+#ifndef TIGER_TYPES_H_
+#define TIGER_TYPES_H_
 
 #include "symbol.h"
 
@@ -58,4 +58,4 @@ char *Ty_ToString(Ty_ty t);
 void Ty_print(Ty_ty t);
 void TyList_print(Ty_tyList list);
 
-#endif /* _TYPES_H_ */
+#endif /* TIGER_TYPES_H_ */

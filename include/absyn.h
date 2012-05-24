@@ -4,8 +4,8 @@
  * All types and functions declared in this header file begin with "A_"
  * Linked list types end with "..list"
  */
-#ifndef _ABSYN_H_
-#define _ABSYN_H_
+#ifndef TIGER_ABSYN_H_
+#define TIGER_ABSYN_H_
 #include "symbol.h"
 
 /* Type Definitions */
@@ -213,4 +213,4 @@ A_efieldList A_EfieldList(A_efield head, A_efieldList tail);
 
 extern A_exp absyn_root;
 
-#endif /* _ABSYN_H_ */
+#endif /* TIGER_ABSYN_H_ */

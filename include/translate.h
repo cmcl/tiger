@@ -1,5 +1,5 @@
-#ifndef _TRANSLATE_H_
-#define _TRANSLATE_H_
+#ifndef TIGER_TRANSLATE_H_
+#define TIGER_TRANSLATE_H_
 
 #include "absyn.h"
 #include "util.h"
@@ -90,4 +90,4 @@ Tr_exp Tr_noExp(void);
 void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals);
 F_fragList Tr_getResult(void);
 
-#endif /* _TRANSLATE_H_ */
+#endif /* TIGER_TRANSLATE_H_ */

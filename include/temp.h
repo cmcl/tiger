@@ -1,5 +1,5 @@
-#ifndef _TEMP_H_
-#define _TEMP_H_
+#ifndef TIGER_TEMP_H_
+#define TIGER_TEMP_H_
 /*
  * temp.h 
  *
@@ -32,4 +32,4 @@ void Temp_dumpMap(FILE *out, Temp_map m);
 
 Temp_map Temp_name(void);
 
-#endif /* _TEMP_H_ */
+#endif /* TIGER_TEMP_H_ */

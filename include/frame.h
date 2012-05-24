@@ -1,5 +1,5 @@
-#ifndef _FRAME_H_
-#define _FRAME_H_
+#ifndef TIGER_FRAME_H_
+#define TIGER_FRAME_H_
 
 #include "temp.h"
 #include "util.h"
@@ -63,4 +63,4 @@ T_exp F_externalCall(string str, T_expList args);
  */
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);
 
-#endif /* _FRAME_H_ */
+#endif /* TIGER_FRAME_H_ */

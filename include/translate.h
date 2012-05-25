@@ -81,6 +81,16 @@ Tr_exp Tr_arithExp(A_oper op, Tr_exp left, Tr_exp right);
  */
 Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right);
 
+/*
+ * Function for the equality (and not-equal) operator operating on integer types.
+ */
+Tr_exp Tr_eqExp(A_oper op, Tr_exp left, Tr_exp right);
+
+/*
+ * To be used for strings on eq/neq only.
+ */
+Tr_exp Tr_eqStringExp(A_oper op, Tr_exp left, Tr_exp right);
+
 Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList);
 Tr_exp Tr_stringExp(string str);
 Tr_exp Tr_intExp(int n);

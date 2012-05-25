@@ -60,12 +60,13 @@ static int is_equal_ty(Ty_ty tType, Ty_ty eType)
 		(tyKind != Ty_record && tyKind != Ty_array && tyKind == eKind) );
 }
 
-void SEM_transProg(A_exp exp)
+F_fragList SEM_transProg(A_exp exp)
 {
 	/* Set up the type and value environments */
 	S_table tenv = E_base_tenv();
 	S_table venv = E_base_venv();
 	transExp(Tr_outermost(), venv, tenv, NULL, exp);
+	return Tr_getResult();
 }
 
 static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk, A_exp a)
@@ -138,7 +139,9 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 				case A_neqOp:
 					switch(left.ty->kind) {
 						case Ty_int:
+							translation = Tr_eqExp(oper, left.exp, right.exp);
 						case Ty_string:
+							translation = Tr_eqStringExp(oper, left.exp, right.exp);
 						case Ty_array:
 						{
 							if (right.ty->kind != left.ty->kind) {
@@ -163,7 +166,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 								Ty_ToString(right.ty));
 						}
 					}
-					return expTy(NULL, Ty_Int());
+					return expTy(translation, Ty_Int());
 				case A_ltOp:
 				case A_leOp:
 				case A_gtOp:
@@ -496,6 +499,7 @@ static Tr_exp transDec(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk
 				if (!is_equal_ty(funEntry->u.fun.result, e.ty))
 					EM_error(funList->head->body->pos, "incorrect return type %s; expected %s",
 						Ty_ToString(e.ty), Ty_ToString(funEntry->u.fun.result));
+				Tr_procEntryExit(funEntry->u.fun.level, e.exp, accessList);
 				S_endScope(venv);
 			}
 			return Tr_noExp();

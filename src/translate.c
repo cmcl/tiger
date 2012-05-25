@@ -391,7 +391,7 @@ Tr_exp Tr_recordExp(int n, Tr_expList list)
 {
 	Temp_temp r = Temp_newtemp();
 	T_stm alloc = T_Move(T_Temp(r),
-		F_externalCall(String("initRecoard"), T_ExpList(T_Const(n * F_WORD_SIZE), NULL)));
+		F_externalCall(String("initRecord"), T_ExpList(T_Const(n * F_WORD_SIZE), NULL)));
 	int i = n - 1;
 	Tr_node p = list->head->next;
 	T_stm seq = T_Move(T_Mem(T_Binop(T_plus, T_Temp(r), T_Const(i-- * F_WORD_SIZE))),
@@ -514,6 +514,30 @@ Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right)
 	return Tr_Cx(trues, falses, cond);
 }
 
+
+Tr_exp Tr_eqExp(A_oper op, Tr_exp left, Tr_exp right)
+{
+	T_relOp oper;
+	if (op == A_eqOp) oper = T_eq;
+	else oper = T_ne;
+	T_stm cond = T_Cjump(oper, unEx(left), unEx(right), NULL, NULL);
+	patchList trues = PatchList(&cond->u.CJUMP.true, NULL);
+	patchList falses = PatchList(&cond->u.CJUMP.false, NULL);
+	return Tr_Cx(trues, falses, cond);
+}
+
+Tr_exp Tr_eqStringExp(A_oper op, Tr_exp left, Tr_exp right)
+{
+	T_exp result = F_externalCall(String("stringEqual"),
+		T_ExpList(unEx(left), T_ExpList(unEx(right), NULL)));
+	if (op == A_eqOp) return Tr_Ex(result);
+	else {
+		T_exp e = (result->kind == T_CONST 
+			&& result->u.CONST == 1) ? T_Const(0) : T_Const(1);
+		return Tr_Ex(e);
+	}
+}
+
 Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList)
 {
 	Tr_ExpList_prepend(argList, Tr_StaticLink(funLevel, level));
@@ -535,9 +559,16 @@ Tr_exp Tr_intExp(int n)
 	return Tr_Ex(T_Const(n));
 }
 
+static Temp_temp nilTemp = NULL;
 Tr_exp Tr_nilExp(void)
 {
-	return Tr_Ex(T_Const(0));
+	if (!nilTemp){
+		nilTemp = Temp_newtemp();
+		T_stm alloc = T_Move(T_Temp(nilTemp),
+			F_externalCall(String("initRecord"), T_ExpList(T_Const(0 * F_WORD_SIZE), NULL)));
+		return Tr_Ex(T_Eseq(alloc, T_Temp(nilTemp)));;
+	}
+	return Tr_Ex(T_Temp(nilTemp));
 }
 
 Tr_exp Tr_noExp(void)

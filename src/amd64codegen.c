@@ -22,7 +22,7 @@ static void munchStm(T_stm stm)
 			if (dst->kind == T_MEM)
 				// cases for memory stm
 			else if (dst->kind == T_TEMP)
-				emit(AS_Move(String(), Temp_TempList(dst, NULL),
+				emit(AS_Move(String_format("mov `d0,`s0"), Temp_TempList(dst, NULL),
 						Temp_TempList(munchExp(src), NULL)));
 			else assert(0); /* destination of move must be temp or memory location */
 		}

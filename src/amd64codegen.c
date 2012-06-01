@@ -6,6 +6,12 @@ static AS_instrList instrList = NULL, last = NULL;
 static void emit(AS_instr instr);
 static void munchStm(T_stm stm);
 static Temp_temp munchExp(T_exp expr);
+static Temp_tempList TL(Temp_temp t, Temp_tempList l);
+
+static Temp_tempList TL(Temp_temp t, Temp_tempList l)
+{
+	return Temp_TempList(t, l);
+}
 
 static void emit(AS_instr instr)
 {
@@ -20,9 +26,42 @@ static void munchStm(T_stm stm)
 		{
 			T_exp dst = stm->u.MOVE.dst, src = stm->u.MOVE.src;
 			if (dst->kind == T_MEM)
-				// cases for memory stm
+				if (dst->u.MEM->kind == T_BINOP &&
+					dst->u.MEM->u.BINOP.op == T_plus &&
+					dst->u.MEM->u.BINOP.right->kind == T_CONST) {
+						/* MOVE(MEM(BINOP(PLUS, e1, CONST(n))), e2) */
+						T_exp e1 = dst->u.MEM->u.BINOP.left, e2 = src;
+						int n = dst->u.MEM->u.BINOP.right->u.CONST;
+						emit(AS_oper(String_format("mov [`s0 + %d],`s1\n", n),
+							NULL, TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
+							
+				} else if (dst->u.MEM->kind == T_BINOP &&
+					dst->u.MEM->u.BINOP.op == T_plus &&
+					dst->u.MEM->u.BINOP.left->kind == T_CONST) {
+						/* MOVE(MEM(BINOP(PLUS, CONST(n), e1)), e2) */
+						T_exp e1 = dst->u.MEM->u.BINOP.right, e2 = src;
+						int n = dst->u.MEM->u.BINOP.left->u.CONST;
+						emit(AS_oper(String_format("mov [`s0 + %d],`s1\n", n),
+							NULL, TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
+				} else if (dst->u.MEM->kind == T_CONST) {
+					/* MOVE(MEM(CONST(n)), e2) */
+					T_exp e2 = src;
+					int n = dst->u.MEM->u.CONST;
+					emit(AS_oper(String_format("mov [`s0 + %d],`s1\n", n),
+							NULL, TL(munchExp(e2), NULL), NULL));
+				} else if (src->kind == T_MEM) {
+					/* MOVE(MEM(e1), MEM(e2)) */
+					T_exp e1 = dst->u.MEM, e2 = src->u.MEM;
+					emit(AS_oper(String_format("mov [`s0],`s1\n"),
+							NULL, TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
+				} else {
+					/* MOVE(MEM(e1), e2) */
+					T_exp e1 = dst->u.MEM, e2 = src;
+					emit(AS_oper(String_format("mov [`s0],`s1\n"),
+							NULL, TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
+				}
 			else if (dst->kind == T_TEMP)
-				emit(AS_Move(String_format("mov `d0,`s0"), Temp_TempList(dst, NULL),
+				emit(AS_Move(String_format("mov `d0,`s0\n"), Temp_TempList(dst, NULL),
 						Temp_TempList(munchExp(src), NULL)));
 			else assert(0); /* destination of move must be temp or memory location */
 		}

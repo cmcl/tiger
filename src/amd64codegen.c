@@ -81,6 +81,37 @@ static void munchStm(T_stm stm)
 		}
 		case T_CJUMP:
 		{
+			Temp_temp left = munchExp(expr->u.CJUMP.left),
+				right = munchExp(expr->u.CJUMP.right);
+			emit(AS_Oper("cmp `s0,`s1\n", NULL, TL(left, right), NULL));
+			switch (expr->u.CJUMP.op) {
+				case T_eq:
+				{
+					emit(AS_Oper("je `d0\n", NULL, NULL,
+						AS_Targets(TL(expr->u.CJUMP.true, NULL))));
+					emit(AS_Oper("jmp `d0\n", NULL, NULL,
+						AS_Targets(TL(expr->u.CJUMP.false, NULL))));
+				}
+				case T_ne:
+				{
+					emit(AS_Oper("jne `d0\n", NULL, NULL,
+						AS_Targets(TL(expr->u.CJUMP.true, NULL))));
+					emit(AS_Oper("jmp `d0\n", NULL, NULL,
+						AS_Targets(TL(expr->u.CJUMP.false, NULL))));
+				}
+				case T_lt:
+				{
+				}
+				case T_gt:
+				{
+				}
+				case T_le:
+				{
+				}
+				case T_ge:
+				{
+				}
+			}
 			break;
 		}
 		case T_EXP:

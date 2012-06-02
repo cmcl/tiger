@@ -84,34 +84,26 @@ static void munchStm(T_stm stm)
 			Temp_temp left = munchExp(expr->u.CJUMP.left),
 				right = munchExp(expr->u.CJUMP.right);
 			emit(AS_Oper("cmp `s0,`s1\n", NULL, TL(left, right), NULL));
+			/* No need to deal with CJUMP false label
+			 * as canonical module has it follow CJUMP */
+			char *instr = NULL;
 			switch (expr->u.CJUMP.op) {
 				case T_eq:
-				{
-					emit(AS_Oper("je `d0\n", NULL, NULL,
-						AS_Targets(TL(expr->u.CJUMP.true, NULL))));
-					emit(AS_Oper("jmp `d0\n", NULL, NULL,
-						AS_Targets(TL(expr->u.CJUMP.false, NULL))));
-				}
+					instr = "je"; break;
 				case T_ne:
-				{
-					emit(AS_Oper("jne `d0\n", NULL, NULL,
-						AS_Targets(TL(expr->u.CJUMP.true, NULL))));
-					emit(AS_Oper("jmp `d0\n", NULL, NULL,
-						AS_Targets(TL(expr->u.CJUMP.false, NULL))));
-				}
+					instr = "jne"; break;
 				case T_lt:
-				{
-				}
+					instr = "jl"; break;
 				case T_gt:
-				{
-				}
+					instr = "jg"; break;
 				case T_le:
-				{
-				}
+					instr = "jle"; break;
 				case T_ge:
-				{
-				}
+					instr = "jge"; break;
+				default: assert(0);
 			}
+			emit(AS_Oper(String_format("%s `d0\n", instr), NULL, NULL,
+				AS_Targets(TL(expr->u.CJUMP.true, NULL))));
 			break;
 		}
 		case T_EXP:

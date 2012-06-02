@@ -6,12 +6,6 @@ static AS_instrList instrList = NULL, last = NULL;
 static void emit(AS_instr instr);
 static void munchStm(T_stm stm);
 static Temp_temp munchExp(T_exp expr);
-static Temp_tempList TL(Temp_temp t, Temp_tempList l);
-
-static Temp_tempList TL(Temp_temp t, Temp_tempList l)
-{
-	return Temp_TempList(t, l);
-}
 
 static void emit(AS_instr instr)
 {
@@ -80,6 +74,9 @@ static void munchStm(T_stm stm)
 		}
 		case T_JUMP:
 		{
+			Temp_temp r = munchExp(stm->u.JUMP.exp);
+			emit(AS_Oper(String_format("jmp `d0\n"), TL(r, NULL), NULL,
+				AS_Targets(stm->u.JUMP.jumps)));
 			break;
 		}
 		case T_CJUMP:
@@ -191,7 +188,11 @@ static Temp_temp munchExp(T_exp expr)
 		}
 		case T_CALL:
 		{
-			return NULL;
+			/* CALL(fun, args) */
+			Temp_temp r = munchExp(expr->u.CALL.fun);
+			Temp_tempList list = munchArgs(0, expr->u.CALL.args);
+			emit(AS_Oper("call `s0\n", F_caller_saves(), TL(r, list), NULL));
+			return NULL; // a call doesn't return anything; return value in register
 		}
 		default: assert(0);
 	}

@@ -4,6 +4,7 @@
 #include "temp.h"
 #include "util.h"
 #include "tree.h"
+#include "assem.h"
 
 typedef struct F_frame_ *F_frame;
 typedef struct F_access_ *F_access;
@@ -47,11 +48,16 @@ F_frag F_StringFrag(Temp_label label, string str);
 F_frag F_ProcFrag(T_stm body, F_frame frame);
 F_fragList F_FragList(F_frag head, F_fragList tail);
 
-/* Frame pointer */
-Temp_temp F_FP(void);
+Temp_tempList F_registers(void);
 
-/* Return value location */
-Temp_temp F_RV(void);
+/* provisionally part of the interface (needed by codegen) */
+Temp_tempList F_caller_saves(void); 
+
+Temp_temp F_FP(void); /* Frame pointer */
+
+Temp_temp F_SP(void); /* stack pointer */
+
+Temp_temp F_RV(void); /* Return value location */
 
 T_exp F_Exp(F_access access, T_exp framePtr);
 
@@ -62,5 +68,9 @@ T_exp F_externalCall(string str, T_expList args);
  * saving and restoring of calle-save registers
  */
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);
+
+AS_instrList F_procEntryExit2(AS_instrList body);
+
+AS_proc F_procEntryExit3(F_frame frame, AS_instrList body);
 
 #endif /* TIGER_FRAME_H_ */

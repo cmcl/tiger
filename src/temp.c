@@ -92,6 +92,22 @@ Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t)
  return p;
 }
 
+Temp_labelList Temp_LabelList_join(Temp_labelList first, Temp_labelList second)
+{
+	if (first != NULL && first != second) {
+		Temp_labelList iter = first;
+		for (; iter->tail; iter = iter->tail)
+			;
+		iter->tail = second;
+	}
+	return first;
+}
+
+Temp_tempList TL(Temp_temp t, Temp_tempList l)
+{
+	return Temp_TempList(t, l);
+}
+
 Temp_labelList Temp_LabelList(Temp_label h, Temp_labelList t)
 {Temp_labelList p = (Temp_labelList) checked_malloc(sizeof (*p));
  p->head=h; p->tail=t;

@@ -30,6 +30,20 @@ static F_access InReg(Temp_temp reg);
 static F_accessList F_AccessList(F_access head, F_accessList tail);
 static F_accessList makeFormalAccessList(F_frame f, U_boolList formals);
 
+/* Make register functions should only be called once (inside one
+ * of the temp list register generator functions.
+ */
+static Temp_tempList F_make_arg_regs(void);
+static Temp_tempList F_make_calle_saves(void);
+static Temp_tempList F_make_caller_saves(void);
+
+static Temp_tempList F_special_registers(void);
+static Temp_tempList F_arg_registers(void);
+static Temp_tempList F_callee_saves(void);
+static Temp_tempList F_caller_saves(void);
+
+static void F_add_to_map(string str, Temp_temp temp);
+
 static F_accessList F_AccessList(F_access head, F_accessList tail)
 {
 	F_accessList list = checked_malloc(sizeof(*list));
@@ -77,6 +91,78 @@ static F_access InReg(Temp_temp reg)
 	fa->kind = inReg;
 	fa->u.reg = reg;
 	return fa;
+}
+
+static Temp_tempList F_make_arg_regs(void)
+{
+	Temp_temp rdi = Temp_newtemp(), rsi = Temp_newtemp(),
+		rdx = Temp_newtemp(), rcx = Temp_newtemp(), r8 = Temp_newtemp(),
+		r9 = Temp_newtemp();
+	F_add_to_map("rdi", rdi); F_add_to_map("rsi", rsi); F_add_to_map("rdx", rdx);
+	F_add_to_map("rcx", rcx); F_add_to_map("r8", r8); F_add_to_map("r9", r9);
+	return TL(rdi, TL(rsi, TL(rdx, TL(rcx, TL(r8, TL(r9, NULL))))));
+}
+
+static Temp_tempList F_make_calle_saves(void)
+{
+	Temp_temp rbx = Temp_newtemp(), r12 = Temp_newtemp(),
+		r13 = Temp_newtemp(), r14 = Temp_newtemp(), r15 = Temp_newtemp();
+	F_add_to_map("rbx", rbx); F_add_to_map("r12", r12); F_add_to_map("r13", r13);
+	F_add_to_map("r14", r14); F_add_to_map("r15", r15);
+	return TL(F_SP(), TL(F_FP(), TL(rbx, TL(r12, TL(r13, TL(r14, TL(r15, NULL)))))));
+}
+
+static Temp_tempList F_make_caller_saves(void)
+{
+	Temp_temp r10 = Temp_newtemp(), r11 = Temp_newtemp();
+	F_add_to_map("r10", r10); F_add_to_map("r11", r11);
+	return TL(F_RV(), TL(r10, TL(r11, F_make_arg_regs())));
+}
+
+static Temp_tempList F_special_registers(void)
+{
+	static Temp_tempList spregs = NULL;
+	if (!spregs) {
+		spregs = Temp_TempList(F_SP(), Temp_TempList(F_FP(),
+			Temp_TempList(F_RV(), NULL)));
+	}
+	return spregs;
+}
+
+static Temp_tempList F_arg_registers(void)
+{
+	static Temp_tempList rarg = NULL;
+	if (!rarg) {
+		rarg = F_make_arg_regs();
+	}
+	return rarg;
+}
+
+static Temp_tempList F_callee_saves(void)
+{
+	static Temp_tempList callee_saves = NULL;
+	if (!callee_saves) {
+		callee_saves = F_make_calle_saves();
+	}
+	return callee_saves;
+}
+
+Temp_tempList F_caller_saves(void)
+{
+	static Temp_tempList caller_saves = NULL;
+	if (!caller_saves) {
+		caller_saves = F_make_caller_saves();
+	}
+	return caller_saves;
+}
+
+static Temp_map F_tempMap = NULL;
+static void F_add_to_map(string str, Temp_temp temp)
+{
+	if (!F_tempMap) {
+		F_tempMap = Temp_name();
+	}
+	Temp_enter(F_tempMap, temp, str);
 }
 
 F_frame F_newFrame(Temp_label name, U_boolList formals)
@@ -130,19 +216,38 @@ F_fragList F_FragList(F_frag head, F_fragList tail)
 	return fl;
 }
 
+Temp_tempList F_registers(void)
+{
+	return Temp_LabelList_join(F_caller_saves(), F_callee_saves());
+}
+
 static Temp_temp fp = NULL;
 Temp_temp F_FP(void)
 {
-	if (!fp)
+	if (!fp) {
 		fp = Temp_newtemp();
+		F_add_to_map("rbp", fp);
+	}
 	return fp;
+}
+
+static Temp_temp sp = NULL;
+Temp_temp F_SP(void)
+{
+	if (!sp) {
+		sp = Temp_newtemp();
+		F_add_to_map("rsp", sp);
+	}
+	return sp;
 }
 
 static Temp_temp rv = NULL;
 Temp_temp F_RV(void)
 {
-	if (!rv)
+	if (!rv) {
 		rv = Temp_newtemp();
+		F_add_to_map("rax", rv);
+	}
 	return rv;
 }
 
@@ -163,5 +268,15 @@ T_exp F_externalCall(string str, T_expList args)
 T_stm F_procEntryExit1(F_frame frame, T_stm stm)
 {
 	return stm; // dummy implementation
+}
+
+AS_instrList F_procEntryExit2(AS_instrList body)
+{
+	return body; // dummy implementation
+}
+
+AS_proc F_procEntryExit3(F_frame frame, AS_instrList body)
+{
+	return AS_Proc("prolog", body, "epilog"); // dummy implementation
 }
 

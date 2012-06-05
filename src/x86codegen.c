@@ -6,6 +6,7 @@ static AS_instrList instrList = NULL, last = NULL;
 static void emit(AS_instr instr);
 static void munchStm(T_stm stm);
 static Temp_temp munchExp(T_exp expr);
+static Temp_tempList munchArgs(unsigned int n, T_expList eList);
 
 static void emit(AS_instr instr)
 {
@@ -114,7 +115,7 @@ static void munchStm(T_stm stm)
 		default: assert(0);
 	}
 }
-
+static Temp_tempList munchArgs(unsigned int n, T_expList eList);
 static Temp_temp munchExp(T_exp expr)
 {
 	switch(expr->kind) {
@@ -221,6 +222,21 @@ static Temp_temp munchExp(T_exp expr)
 	}
 }
 
+// Hack to stick to the interface provided in the book
+static F_frame CODEGEN_frame = NULL;
+static Temp_tempList munchArgs(unsigned int n, T_expList eList)
+{
+	if (!CODEGEN_frame) assert(0); // should never be NULL
+	if (!eList) return NULL;
+	// need first argument to be pushed onto stack last
+	Temp_tempList tlist = munchArgs(n + 1, eList->tail);
+	Temp_temp e = munchExp(eList->head);
+	/* use the frame here to determine whether we push
+	 * or move into a register. */
+	emit(AS_Oper("push `s0\n", NULL, TL(e, NULL), NULL));
+	return TL(e, tlist);
+}
+
 /*
  * Implementation of the the codegen interface.
  */
@@ -229,6 +245,7 @@ AS_instrList F_codegen(F_frame frame, T_stmList stmList)
 {
 	AS_instrList asList = NULL;
 	T_stmList sList = stmList;
+	CODEGEN_frame = frame; // set for munchArgs
 	for (; sList; sList = sList->tail)
 		munchStm(sList->head);
 	asList = instrList;

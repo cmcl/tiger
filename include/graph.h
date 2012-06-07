@@ -1,6 +1,13 @@
+#ifndef TIGER_GRAPH_H_
+#define TIGER_GRAPH_H_
+
 /*
  * graph.h - Abstract Data Type (ADT) for directed graphs
  */
+
+#include <stdio.h>
+#include "util.h"
+#include "table.h"
 
 typedef struct G_graph_ *G_graph;  /* The "graph" type */
 typedef struct G_node_ *G_node;    /* The "node" type */
@@ -62,3 +69,5 @@ void G_enter(G_table t, G_node node, void *value);
 
 /* Tell what "node" maps to in table "t" */
 void *G_look(G_table t, G_node node);
+
+#endif // TIGER_GRAPH_H_

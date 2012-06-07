@@ -1,5 +1,6 @@
 #include "codegen.h"
 #include "temp.h"
+#include "util.h"
 
 static AS_instrList instrList = NULL, last = NULL;
 

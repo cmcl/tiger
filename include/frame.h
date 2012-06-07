@@ -44,6 +44,11 @@ Temp_label F_name(F_frame frame);
 F_accessList F_formals(F_frame frame);
 F_access F_allocLocal(F_frame frame, bool escape);
 
+/*
+ * Return true if the argument referenced by access escapes.
+ */
+bool F_doesEscape(F_access access);
+
 F_frag F_StringFrag(Temp_label label, string str);
 F_frag F_ProcFrag(T_stm body, F_frame frame);
 F_fragList F_FragList(F_frag head, F_fragList tail);

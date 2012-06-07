@@ -1,5 +1,6 @@
 #include "codegen.h"
 #include "temp.h"
+#include "util.h"
 
 static AS_instrList instrList = NULL, last = NULL;
 
@@ -227,13 +228,22 @@ static F_frame CODEGEN_frame = NULL;
 static Temp_tempList munchArgs(unsigned int n, T_expList eList)
 {
 	if (!CODEGEN_frame) assert(0); // should never be NULL
-	if (!eList) return NULL;
+	
+	static F_accessList formals = NULL;
+	if (!formals && eList) formals = F_formals(frame);
+	else if (eList) formals = formals->tail;
+	else return NULL;
+	
 	// need first argument to be pushed onto stack last
 	Temp_tempList tlist = munchArgs(n + 1, eList->tail);
 	Temp_temp e = munchExp(eList->head);
 	/* use the frame here to determine whether we push
 	 * or move into a register. */
-	emit(AS_Oper("push `s0\n", NULL, TL(e, NULL), NULL));
+	if (F_doesEscape(formals->head)) emit(AS_Oper("push `s0\n", NULL, TL(e, NULL), NULL));
+	else {
+		// figure out which register to put it in
+		emit(AS_Move("mov ebx,`s0", NULL, TL(e, NULL)));
+	}
 	return TL(e, tlist);
 }
 

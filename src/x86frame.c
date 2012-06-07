@@ -185,6 +185,11 @@ F_access F_allocLocal(F_frame f, bool escape)
 	return InReg(Temp_newtemp());
 }
 
+bool F_doesEscape(F_access access)
+{
+	return (access != NULL && access->kind == inFrame);
+}
+
 F_frag F_StringFrag(Temp_label label, string str)
 {
 	F_frag strfrag = checked_malloc(sizeof(*strfrag));

@@ -116,7 +116,7 @@ static void munchStm(T_stm stm)
 		default: assert(0);
 	}
 }
-static Temp_tempList munchArgs(unsigned int n, T_expList eList);
+
 static Temp_temp munchExp(T_exp expr)
 {
 	switch(expr->kind) {
@@ -223,15 +223,18 @@ static Temp_temp munchExp(T_exp expr)
 	}
 }
 
-// Hack to stick to the interface provided in the book
 static F_frame CODEGEN_frame = NULL;
+static char *register_names[] = {"eax", "ebx", "ecx", "edx", "edi", "esi"};
+static unsigned int reg_count = 0;
 static Temp_tempList munchArgs(unsigned int n, T_expList eList)
 {
 	if (!CODEGEN_frame) assert(0); // should never be NULL
 	
 	static F_accessList formals = NULL;
-	if (!formals && eList) formals = F_formals(frame);
-	else if (eList) formals = formals->tail;
+	if (!formals && eList) {
+		formals = F_formals(frame);
+		reg_count = 0;
+	} else if (eList) formals = formals->tail;
 	else return NULL;
 	
 	// need first argument to be pushed onto stack last
@@ -241,8 +244,8 @@ static Temp_tempList munchArgs(unsigned int n, T_expList eList)
 	 * or move into a register. */
 	if (F_doesEscape(formals->head)) emit(AS_Oper("push `s0\n", NULL, TL(e, NULL), NULL));
 	else {
-		// figure out which register to put it in
-		emit(AS_Move("mov ebx,`s0", NULL, TL(e, NULL)));
+		emit(AS_Move(
+			String_format("mov %s,`s0", register_names[reg_count++]), NULL, TL(e, NULL)));
 	}
 	return TL(e, tlist);
 }

@@ -29,7 +29,7 @@ static F_accessList F_AccessList(F_access head, F_accessList tail);
 static F_accessList makeFormalAccessList(F_frame f, U_boolList formals);
 
 /* Make register functions should only be called once (inside one
- * of the temp list register generator functions.
+ * of the temp list register generator functions).
  */
 static Temp_tempList F_make_arg_regs(void);
 static Temp_tempList F_make_calle_saves(void);

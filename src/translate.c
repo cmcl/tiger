@@ -545,12 +545,12 @@ Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_exp
 	return Tr_Ex(T_Call(T_Name(funLabel), args));
 }
 
-static F_fragList stringFragList = NULL;
+
 Tr_exp Tr_stringExp(string str)
 {
 	Temp_label strLabel = Temp_newlabel();
 	F_frag fragment = F_StringFrag(strLabel, str);
-	stringFragList = F_FragList(fragment, stringFragList);
+	fragList = F_FragList(fragment, fragList);
 	return Tr_Ex(T_Name(strLabel));
 }
 

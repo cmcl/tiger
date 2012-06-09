@@ -40,7 +40,6 @@ static Temp_tempList F_make_caller_saves(void);
 static Temp_tempList F_special_registers(void);
 static Temp_tempList F_arg_registers(void);
 static Temp_tempList F_callee_saves(void);
-static Temp_tempList F_caller_saves(void);
 
 static void F_add_to_map(string str, Temp_temp temp);
 
@@ -218,7 +217,7 @@ F_fragList F_FragList(F_frag head, F_fragList tail)
 
 Temp_tempList F_registers(void)
 {
-	return Temp_LabelList_join(F_caller_saves(), F_callee_saves());
+	return Temp_TempList_join(F_caller_saves(), F_callee_saves());
 }
 
 static Temp_temp fp = NULL;

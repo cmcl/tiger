@@ -11,8 +11,8 @@ OPTIONS=-o
 LEXER_OBJECTS= driver.o lex.yy.o errormsg.o util.o
 PARSER_OBJECTS= parsetest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o
 PARSE_OBJECTS= parse.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o
-SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o env.o semant.o \
-	types.o temp.o translate.o frame.o tree.o
+SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o \
+	table.o prabsyn.o env.o semant.o types.o temp.o translate.o frame.o tree.o assem.o
 STR_OBJECTS = stringtest.o util.o
 
 STR_OBJS  = $(patsubst %, $(ODIR)/%, $(STR_OBJECTS))

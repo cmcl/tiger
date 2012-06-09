@@ -1,28 +1,27 @@
-Do/*
-  * mipscodegen.c - Functions to translate to Assem-instructions for
-  *             the Jouette assembly language using Maximal Munch.
-  */
-
-#include <stdio.h>
 #include <stdlib.h> /* for atoi */
 #include <string.h> /* for strcpy */
-#include "util.h"
 #include "symbol.h"
 #include "absyn.h"
-#include "temp.h"
 #include "tree.h"
 #include "assem.h"
 #include "frame.h"
 #include "errormsg.h"
 
-  AS_targets AS_Targets(Temp_labelList labels) {
-	  AS_targets p = checked_malloc (sizeof *p);
-	  p->labels=labels;
-	  return p;
+static Temp_temp nthTemp(Temp_tempList list, int i);
+static Temp_label nthLabel(Temp_labelList list, int i);
+static void format(char *result, string assem, Temp_tempList dst,
+	Temp_tempList src, AS_targets jumps, Temp_map m);
+
+AS_targets AS_Targets(Temp_labelList labels)
+{
+	AS_targets p = checked_malloc(sizeof *p);
+	p->labels=labels;
+	return p;
 }
 
-AS_instr AS_Oper(string a, Temp_tempList d, Temp_tempList s, AS_targets j) {
-	AS_instr p = (AS_instr) checked_malloc (sizeof *p);
+AS_instr AS_Oper(string a, Temp_tempList d, Temp_tempList s, AS_targets j)
+{
+	AS_instr p = checked_malloc(sizeof *p);
 	p->kind = I_OPER;
 	p->u.OPER.assem=a; 
 	p->u.OPER.dst=d; 
@@ -31,16 +30,18 @@ AS_instr AS_Oper(string a, Temp_tempList d, Temp_tempList s, AS_targets j) {
 	return p;
 }
 
-AS_instr AS_Label(string a, Temp_label label) {
-	AS_instr p = (AS_instr) checked_malloc (sizeof *p);
+AS_instr AS_Label(string a, Temp_label label)
+{
+	AS_instr p = checked_malloc(sizeof *p);
 	p->kind = I_LABEL;
 	p->u.LABEL.assem=a; 
 	p->u.LABEL.label=label; 
 	return p;
 }
 
-AS_instr AS_Move(string a, Temp_tempList d, Temp_tempList s) {
-	AS_instr p = (AS_instr) checked_malloc (sizeof *p);
+AS_instr AS_Move(string a, Temp_tempList d, Temp_tempList s)
+{
+	AS_instr p = checked_malloc(sizeof *p);
 	p->kind = I_MOVE;
 	p->u.MOVE.assem=a; 
 	p->u.MOVE.dst=d; 
@@ -49,13 +50,15 @@ AS_instr AS_Move(string a, Temp_tempList d, Temp_tempList s) {
 }
 
 AS_instrList AS_InstrList(AS_instr head, AS_instrList tail)
-{AS_instrList p = (AS_instrList) checked_malloc (sizeof *p);
-p->head=head; p->tail=tail;
-return p;
+{
+	AS_instrList p = checked_malloc(sizeof *p);
+	p->head=head; p->tail=tail;
+	return p;
 }
 
 /* put list b at the end of list a */
-AS_instrList AS_splice(AS_instrList a, AS_instrList b) {
+AS_instrList AS_splice(AS_instrList a, AS_instrList b)
+{
 	AS_instrList p;
 	if (a==NULL) return b;
 	for(p=a; p->tail!=NULL; p=p->tail) ;
@@ -63,13 +66,15 @@ AS_instrList AS_splice(AS_instrList a, AS_instrList b) {
 	return a;
 }
 
-static Temp_temp nthTemp(Temp_tempList list, int i) {
+static Temp_temp nthTemp(Temp_tempList list, int i)
+{
 	assert(list);
 	if (i==0) return list->head;
 	else return nthTemp(list->tail,i-1);
 }
 
-static Temp_label nthLabel(Temp_labelList list, int i) {
+static Temp_label nthLabel(Temp_labelList list, int i)
+{
 	assert(list);
 	if (i==0) return list->head;
 	else return nthLabel(list->tail,i-1);
@@ -80,9 +85,8 @@ static Temp_label nthLabel(Temp_labelList list, int i) {
 * and replacing `d `s and `j stuff.
 * Last param is function to use to determine what to do with each temp.
 */
-static void format(char *result, string assem, 
-	Temp_tempList dst, Temp_tempList src,
-	AS_targets jumps, Temp_map m)
+static void format(char *result, string assem, Temp_tempList dst,
+	Temp_tempList src, AS_targets jumps, Temp_map m)
 {
 	char *p;
 	int i = 0; /* offset to result string */

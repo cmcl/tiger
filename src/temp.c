@@ -92,10 +92,10 @@ Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t)
  return p;
 }
 
-Temp_labelList Temp_LabelList_join(Temp_labelList first, Temp_labelList second)
+Temp_tempList Temp_TempList_join(Temp_tempList first, Temp_tempList second)
 {
 	if (first != NULL && first != second) {
-		Temp_labelList iter = first;
+		Temp_tempList iter = first;
 		for (; iter->tail; iter = iter->tail)
 			;
 		iter->tail = second;

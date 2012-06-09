@@ -13,6 +13,8 @@ Temp_temp Temp_newtemp(void);
 typedef struct Temp_tempList_ *Temp_tempList;
 struct Temp_tempList_ { Temp_temp head; Temp_tempList tail;};
 Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t);
+Temp_tempList Temp_TempList_join(Temp_tempList first, Temp_tempList second);
+Temp_tempList TL(Temp_temp t, Temp_tempList l);
 
 typedef S_symbol Temp_label;
 Temp_label Temp_newlabel(void);
@@ -22,8 +24,6 @@ string Temp_labelstring(Temp_label s);
 typedef struct Temp_labelList_ *Temp_labelList;
 struct Temp_labelList_ { Temp_label head; Temp_labelList tail;};
 Temp_labelList Temp_LabelList(Temp_label h, Temp_labelList t);
-Temp_labelList Temp_LabelList_join(Temp_labelList first, Temp_labelList second);
-Temp_tempList TL(Temp_temp t, Temp_tempList l);
 
 typedef struct Temp_map_ *Temp_map;
 Temp_map Temp_empty(void);

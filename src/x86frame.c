@@ -103,7 +103,7 @@ static Temp_tempList F_make_arg_regs(void)
 static Temp_tempList F_make_calle_saves(void)
 {
 	Temp_temp ebx = Temp_newtemp();
-	F_add_to_map("ebx", rbx);
+	F_add_to_map("ebx", ebx);
 	return TL(F_SP(), TL(F_FP(), TL(ebx, NULL)));
 }
 
@@ -201,6 +201,7 @@ F_frag F_StringFrag(Temp_label label, string str)
 F_frag F_ProcFrag(T_stm body, F_frame frame)
 {
 	F_frag pfrag = checked_malloc(sizeof(*pfrag));
+	pfrag->kind = F_procFrag;
 	pfrag->u.proc.body = body;
 	pfrag->u.proc.frame = frame;
 	return pfrag;

@@ -56,8 +56,11 @@ $(ODIR)/%.o: $(SDIR)/%.c
 $(ODIR)/%.o: $(TESTDIR)/%.c
 	$(COMPILER) $(CFLAGS) $@ $<
 
-$(ODIR)/frame.o: $(SDIR)/amd64frame.c
+$(ODIR)/frame.o: $(SDIR)/x86frame.c
 	$(COMPILER) $(CFLAGS) $@ $<
+
+##$(ODIR)/frame.o: $(SDIR)/amd64frame.c
+##	$(COMPILER) $(CFLAGS) $@ $<
 
 $(ODIR)/lex.yy.o: $(SDIR)/lex.yy.c
 	$(COMPILER) $(CFLAGS) $@ $<

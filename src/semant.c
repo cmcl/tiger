@@ -7,7 +7,7 @@
 
 /* prototypes for functions local to this module */
 static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk, A_exp a);
-static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v);
+static struct expty transVar(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk, A_var v);
 static Tr_exp transDec(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk, A_dec d);
 static Ty_ty transTy(S_table tenv, A_ty t);
 static struct expty expTy(Tr_exp exp, Ty_ty ty);
@@ -74,7 +74,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 	switch (a->kind) {
 		case A_varExp:
 		{
-			return transVar(level, venv, tenv, a->u.var);
+			return transVar(level, venv, tenv, breakk, a->u.var);
 		}
 		case A_nilExp:
 		{

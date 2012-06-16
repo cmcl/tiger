@@ -91,6 +91,12 @@ Tr_exp Tr_eqExp(A_oper op, Tr_exp left, Tr_exp right);
  */
 Tr_exp Tr_eqStringExp(A_oper op, Tr_exp left, Tr_exp right);
 
+
+/*
+ * To be used to compare references e.g. array and record types
+ */
+Tr_exp Tr_eqRef(A_oper op, Tr_exp left, Tr_exp right);
+
 Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList);
 Tr_exp Tr_stringExp(string str);
 Tr_exp Tr_intExp(int n);

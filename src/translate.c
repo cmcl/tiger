@@ -538,6 +538,12 @@ Tr_exp Tr_eqStringExp(A_oper op, Tr_exp left, Tr_exp right)
 	}
 }
 
+
+Tr_exp Tr_eqRef(A_oper op, Tr_exp left, Tr_exp right)
+{
+	return Tr_Ex(T_Const(0));
+}
+
 Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_expList argList)
 {
 	Tr_ExpList_prepend(argList, Tr_StaticLink(funLevel, level));

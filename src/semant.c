@@ -139,9 +139,13 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 				case A_neqOp:
 					switch(left.ty->kind) {
 						case Ty_int:
-							translation = Tr_eqExp(oper, left.exp, right.exp);
+							if (is_equal_ty(right.ty, left.ty))
+								translation = Tr_eqExp(oper, left.exp, right.exp);
+							break;
 						case Ty_string:
-							translation = Tr_eqStringExp(oper, left.exp, right.exp);
+							if (is_equal_ty(right.ty, left.ty))
+								translation = Tr_eqStringExp(oper, left.exp, right.exp);
+							break;
 						case Ty_array:
 						{
 							if (right.ty->kind != left.ty->kind) {
@@ -149,6 +153,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 									"%s expression given for RHS; expected %s",
 									Ty_ToString(right.ty), Ty_ToString(left.ty));
 							}
+							translation = Tr_eqRef(oper, left.exp, right.exp);
 							break;
 						}
 						case Ty_record:
@@ -158,6 +163,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 									"%s expression given for RHS; expected record or nil",
 									Ty_ToString(right.ty));
 							}
+							translation = Tr_eqRef(oper, left.exp, right.exp);
 							break;
 						}
 						default:
@@ -200,7 +206,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			Ty_ty typ = S_look_ty(tenv, a->u.record.typ);
 			if (!typ) {
 				EM_error(a->pos, "undefined type");
-				return expTy(NULL, Ty_Record(NULL));
+				return expTy(Tr_noExp(), Ty_Record(NULL));
 			}
 			if (typ->kind != Ty_record)
 				EM_error(a->pos, "%s is not a record type", S_name(a->u.record.typ));
@@ -222,7 +228,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 		}
 		case A_seqExp:
 		{
-			struct expty expr = expTy(NULL, Ty_Void()); /* empty seq case */
+			struct expty expr = expTy(Tr_noExp(), Ty_Void()); /* empty seq case */
 			A_expList seq;
 			Tr_expList list = Tr_ExpList();
 			for (seq = a->u.seq; seq; seq = seq->tail) {
@@ -296,7 +302,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 		}
 		case A_breakExp:
 		{
-			Tr_exp translation = NULL;
+			Tr_exp translation = Tr_noExp();
 			if (!breakk) {
 				EM_error(a->pos, "illegal break expression; must be inside loop construct");
 			} else {
@@ -324,7 +330,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			Ty_ty typ = S_look_ty(tenv, a->u.array.typ);
 			if (!typ) {
 				EM_error(a->pos, "undefined type");
-				return expTy(NULL, Ty_Int());
+				return expTy(Tr_noExp(), Ty_Int());
 			} else {
 				struct expty size = transExp(level, venv, tenv, breakk, a->u.array.size);
 				struct expty init = transExp(level, venv, tenv, breakk, a->u.array.init);
@@ -349,7 +355,7 @@ static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v
 		case A_simpleVar:
 		{
 			E_enventry x = S_look(venv, v->u.simple);
-			Tr_exp translation = NULL;
+			Tr_exp translation = Tr_noExp();
 			if (x && x->kind == E_varEntry) {
 				translation = Tr_simpleVar(x->u.var.access, level);
 				return expTy(translation, actual_ty(x->u.var.ty));
@@ -374,17 +380,17 @@ static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v
 				}
 				EM_error(v->pos, "no such field %s for record type", S_name(v->u.field.sym));
 			}
-			return expTy(NULL, Ty_Int());
+			return expTy(Tr_noExp(), Ty_Int());
 		}
 		case A_subscriptVar:
 		{
 			struct expty e = transVar(level, venv, tenv, v->u.subscript.var);
+			Tr_exp translation = Tr_noExp();
 			if (e.ty->kind != Ty_array) {
 				EM_error(v->u.subscript.var->pos, "not an array type");
-				return expTy(NULL, Ty_Int());
+				return expTy(translation, Ty_Int());
 			} else {
 				struct expty index = transExp(level, venv, tenv, NULL, v->u.subscript.exp);
-				Tr_exp translation = NULL;
 				if (index.ty->kind != Ty_int) {
 					EM_error(v->u.subscript.exp->pos, "integer required");
 				} else {

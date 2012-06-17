@@ -252,13 +252,13 @@ static Tr_exp Tr_StaticLink(Tr_level funLevel, Tr_level level)
 {
 	T_exp addr = T_Temp(F_FP());
 	/* Follow static links until we reach level of defintion */
-	while (funLevel != level) {
+	while (level != funLevel->parent) {
 		/* Static link is the first frame formal */
-		F_access staticLink = F_formals(funLevel->frame)->head;
+		F_access staticLink = F_formals(level->frame)->head;
 		addr = F_Exp(staticLink, addr);
-		funLevel = funLevel->parent;
+		level = level->parent;
 	}
-	return Tr_Ex(T_Mem(addr));
+	return Tr_Ex(addr);
 }
 
 /*

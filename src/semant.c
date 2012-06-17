@@ -104,6 +104,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 					if (!is_equal_ty(arg.ty, formals->head))
 						EM_error(args->head->pos, "incorrect type %s; expected %s",
 							Ty_ToString(arg.ty), Ty_ToString(formals->head));
+					Tr_ExpList_append(argList, arg.exp);
 				}
 				/* Check we have the same number of arguments and formals */
 				if (args == NULL && formals != NULL)
@@ -198,7 +199,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 					return expTy(translation, Ty_Int());
 				}
 			}
-			assert(0);
+			assert(0 && "Invalid operator in expression");
 			return expTy(Tr_noExp(), Ty_Int());
 		}
 		case A_recordExp:
@@ -239,7 +240,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 		}
 		case A_assignExp:
 		{
-			struct expty var = transVar(level, venv, tenv, a->u.assign.var);
+			struct expty var = transVar(level, venv, tenv, breakk, a->u.assign.var);
 			struct expty exp = transExp(level, venv, tenv, breakk, a->u.assign.exp);
 			if (!is_equal_ty(var.ty, exp.ty))
 				EM_error(a->u.assign.exp->pos, "expression not of expected type %s",
@@ -349,7 +350,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 	assert(0);
 }
 
-static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v)
+static struct expty transVar(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk, A_var v)
 {
 	switch(v->kind) {
 		case A_simpleVar:
@@ -366,7 +367,7 @@ static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v
 		}
 		case A_fieldVar:
 		{
-			struct expty e = transVar(level, venv, tenv, v->u.field.var);
+			struct expty e = transVar(level, venv, tenv, breakk, v->u.field.var);
 			if (e.ty->kind != Ty_record) {
 				EM_error(v->u.field.var->pos, "not a record type");
 			} else {
@@ -384,13 +385,13 @@ static struct expty transVar(Tr_level level, S_table venv, S_table tenv, A_var v
 		}
 		case A_subscriptVar:
 		{
-			struct expty e = transVar(level, venv, tenv, v->u.subscript.var);
+			struct expty e = transVar(level, venv, tenv, breakk, v->u.subscript.var);
 			Tr_exp translation = Tr_noExp();
 			if (e.ty->kind != Ty_array) {
 				EM_error(v->u.subscript.var->pos, "not an array type");
 				return expTy(translation, Ty_Int());
 			} else {
-				struct expty index = transExp(level, venv, tenv, NULL, v->u.subscript.exp);
+				struct expty index = transExp(level, venv, tenv, breakk, v->u.subscript.exp);
 				if (index.ty->kind != Ty_int) {
 					EM_error(v->u.subscript.exp->pos, "integer required");
 				} else {

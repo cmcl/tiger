@@ -53,15 +53,14 @@ static F_accessList makeFormalAccessList(F_frame f, U_boolList formals)
 {
 	U_boolList fmls;
 	F_accessList headList = NULL, tailList = NULL;
-	int i = 1;
-	for (fmls = formals; fmls; fmls = fmls->tail) {
+	int i = 0;
+	for (fmls = formals; fmls; fmls = fmls->tail, i++) {
 		F_access access = NULL;
-		if (i <= F_K && !fmls->head) {
+		if (i < F_K && !fmls->head) {
 			access = InReg(Temp_newtemp());
-			i++;
 		} else {
-			/* Add 1 for return address space. */
-			access = InFrame((1 + i) * F_WORD_SIZE);
+			/* Keep a space for return address space. */
+			access = InFrame((2 + i) * F_WORD_SIZE);
 		}
 		if (headList) {
 			tailList->tail = F_AccessList(access, NULL);

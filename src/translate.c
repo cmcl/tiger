@@ -443,9 +443,14 @@ static Tr_exp Tr_ifExpNoElse(Tr_exp test, Tr_exp then)
 	doPatch(cond.trues, t);
 	doPatch(cond.falses, f);
 	if (then->kind == Tr_nx) {
-		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t), T_Seq(then->u.nx, T_Label(f))))); 
+		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t),
+					T_Seq(then->u.nx, T_Label(f))))); 
 	} else if (then->kind == Tr_cx) {
-		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t), T_Seq(then->u.cx.stm, T_Label(f))))); 
+		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t),
+					T_Seq(then->u.cx.stm, T_Label(f))))); 
+	} else {
+		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t),
+					T_Seq(T_Exp(unEx(then)), T_Label(f)))));
 	}
 	return result;
 }

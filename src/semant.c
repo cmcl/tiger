@@ -93,7 +93,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			A_expList args = NULL;
 			Ty_tyList formals;
 			E_enventry x = S_look(venv, a->u.call.func);
-			Tr_exp translation = NULL;
+			Tr_exp translation = Tr_noExp();
 			Tr_expList argList = Tr_ExpList();
 			if (x && x->kind == E_funEntry) {
 				// check type of formals
@@ -123,7 +123,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			A_oper oper = a->u.op.oper;
 			struct expty left = transExp(level, venv, tenv, breakk, a->u.op.left);
 			struct expty right = transExp(level, venv, tenv, breakk, a->u.op.right);
-			Tr_exp translation = NULL;
+			Tr_exp translation = Tr_noExp();
 			switch (oper) {
 				case A_plusOp:
 				case A_minusOp:
@@ -465,9 +465,10 @@ static Tr_exp transDec(Tr_level level, S_table venv, S_table tenv, Tr_exp breakk
 			A_fundecList funList;
 			Ty_tyList formalTys;
 			U_boolList formals;
-			Ty_ty resultTy = NULL;
+			Ty_ty resultTy;
 			/* "headers" first -- so we can deal with mutally recursive functions */
 			for (funList = d->u.function; funList; funList = funList->tail) {
+				resultTy = NULL;
 				if (funList->head->result) {
 					resultTy = S_look(tenv, funList->head->result);
 					if (!resultTy) {

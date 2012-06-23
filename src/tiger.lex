@@ -20,6 +20,13 @@ void setup(void)
 	strlength = 0;
 }
 
+char *teardown()
+{
+	char *s = checked_malloc(strlen(strbuf)+1);
+	strcpy(s, strbuf);
+	return s;
+}
+
 void appendstr(char *str)
 {
 	if ((strlength + strlen(str)) < BUFSIZE) {
@@ -98,7 +105,7 @@ void adjust(void)
 
 \" {adjust(); BEGIN(STR); setup();}
 <STR>{
-	\" 			{adjust(); yylval.sval=strbuf; BEGIN(INITIAL); return STRING;}
+	\" 			{adjust(); yylval.sval=teardown(); BEGIN(INITIAL); return STRING;}
 	\\n			{adjust(); appendstr("\n");}
 	\\t			{adjust(); appendstr("\t");}
 	\\[0-9]{3}	{adjust(); appendstr(yytext);}
@@ -106,7 +113,7 @@ void adjust(void)
 	\\\\		{adjust(); appendstr(yytext);}
 	\\\"		{adjust(); appendstr(yytext);}
 	\\[ \n\t\r\f]+\\ {adjust();}
-	\\(.|\n)	{adjust(); EM_error(EM_tokPos, "illegal token biatch!");}
+	\\(.|\n)	{adjust(); EM_error(EM_tokPos, "illegal token");}
 	\n			{adjust(); EM_error(EM_tokPos, "illegal token");}
 	[^\"\\\n]+ 	{adjust(); appendstr(yytext);}
 }

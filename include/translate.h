@@ -39,6 +39,8 @@ void Tr_ExpList_append(Tr_expList list, Tr_exp expr);
  */
 void Tr_ExpList_prepend(Tr_expList list, Tr_exp expr);
 
+int Tr_ExpList_empty(Tr_expList list);
+
 /*
  * Translates a sequence of expressions
  * This function requires the result, of executing the body

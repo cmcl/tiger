@@ -236,6 +236,9 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 				expr = transExp(level, venv, tenv, breakk, seq->head);
 				Tr_ExpList_prepend(list, expr.exp); // last expr is result of expression
 			}
+			// At least one exp in the list.
+			if (Tr_ExpList_empty(list))
+				Tr_ExpList_prepend(list, expr.exp);
 			return expTy(Tr_seqExp(list), expr.ty);
 		}
 		case A_assignExp:
@@ -263,7 +266,7 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			} else {
 				if (then.ty->kind != Ty_void)
 					EM_error(a->u.iff.then->pos, "must produce no value");
-				return expTy(Tr_ifExp(test.exp, then.exp, NULL), Ty_Void());
+				return expTy(Tr_ifExp(test.exp, then.exp, Tr_noExp()), Ty_Void());
 			}
 		}
 		case A_whileExp:

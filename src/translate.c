@@ -331,6 +331,12 @@ void Tr_ExpList_prepend(Tr_expList list, Tr_exp expr)
 	}
 }
 
+int Tr_ExpList_empty(Tr_expList list)
+{
+	if (!list || !list->head) return 1;
+	else return 0;
+}
+
 static T_expList Tr_ExpList_convert(Tr_expList list)
 {
 	T_expList eList = NULL;

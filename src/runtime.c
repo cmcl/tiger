@@ -3,18 +3,20 @@
 
 
 int *initArray(int size, int init)
-{int i;
- int *a = (int *)malloc(size*sizeof(int));
- for(i=0;i<size;i++) a[i]=init;
- return a;
+{
+	int i;
+	int *a = (int *)malloc(size*sizeof(int));
+	for(i=0; i<size; i++) a[i] = init;
+	return a;
 }
 
 int *allocRecord(int size)
-{int i;
- int *p, *a;
- p = a = (int *)malloc(size);
- for(i=0;i<size;i+=sizeof(int)) *p++ = 0;
- return a;
+{
+	int i;
+	int *p, *a;
+	p = a = (int *)malloc(size);
+	for(i=0; i<size; i+=sizeof(int)) *p++ = 0;
+	return a;
 }
 
 struct string {int length; unsigned char chars[1];};
@@ -28,8 +30,10 @@ int stringEqual(struct string *s, struct string *t)
 }
 
 void print(struct string *s)
-{int i; unsigned char *p=s->chars;
- for(i=0;i<s->length;i++,p++) putchar(*p);
+{
+	int i;
+	unsigned char *p = s->chars;
+	for(i=0; i < s->length; i++, p++) putchar(*p);
 }
 
 void flush()

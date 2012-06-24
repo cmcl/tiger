@@ -21,6 +21,21 @@ string Temp_labelstring(Temp_label s)
 
 static int labels = 0;
 
+TL_table TL_empty(void)
+{
+	return TAB_empty();
+}
+
+void TL_enter(TL_table t, Temp_label label, void *v)
+{
+	return TAB_enter(t, label, v);
+}
+
+void *TL_look(TL_table t, Temp_label label)
+{
+	return TAB_look(t, label);
+}
+
 Temp_label Temp_newlabel(void)
 {char buf[100];
  sprintf(buf,"L%d",labels++);

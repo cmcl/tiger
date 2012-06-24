@@ -6,6 +6,14 @@
  */
 #include <stdio.h>
 #include "symbol.h"
+#include "table.h"
+
+// Table type mapping labels to information
+typedef struct TAB_table_ *TL_table;
+
+TL_table TL_empty(void);
+void TL_enter(TL_table t, Temp_label label, void *v);
+void *TL_look(TL_table t, Temp_label label); 
 
 typedef struct Temp_temp_ *Temp_temp;
 Temp_temp Temp_newtemp(void);

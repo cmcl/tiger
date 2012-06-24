@@ -11,10 +11,6 @@
 // Table type mapping labels to information
 typedef struct TAB_table_ *TL_table;
 
-TL_table TL_empty(void);
-void TL_enter(TL_table t, Temp_label label, void *v);
-void *TL_look(TL_table t, Temp_label label); 
-
 typedef struct Temp_temp_ *Temp_temp;
 Temp_temp Temp_newtemp(void);
 
@@ -28,6 +24,10 @@ typedef S_symbol Temp_label;
 Temp_label Temp_newlabel(void);
 Temp_label Temp_namedlabel(string name);
 string Temp_labelstring(Temp_label s);
+
+TL_table TL_empty(void);
+void TL_enter(TL_table t, Temp_label label, void *v);
+void *TL_look(TL_table t, Temp_label label); 
 
 typedef struct Temp_labelList_ *Temp_labelList;
 struct Temp_labelList_ { Temp_label head; Temp_labelList tail;};

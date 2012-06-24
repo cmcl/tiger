@@ -10,7 +10,8 @@ OPTIONS=-o
 
 LEXER_OBJECTS= driver.o lex.yy.o errormsg.o util.o
 PARSER_OBJECTS= parsertest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o
-PARSE_OBJECTS= parse.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o table.o prabsyn.o
+PARSE_OBJECTS= parsetest.o parse.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o \
+	table.o prabsyn.o
 SEM_OBJECTS = semantest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o \
 	table.o prabsyn.o env.o semant.o types.o temp.o translate.o frame.o tree.o assem.o
 STR_OBJECTS = stringtest.o util.o
@@ -27,7 +28,7 @@ TREE_OBJS = $(patsubst %, $(ODIR)/%, $(TREE_OBJECTS))
 
 LEXER_PROG_NAME=$(BDIR)/lextest
 PARSER_PROG_NAME=$(BDIR)/parsertest
-PARSE_PROG_NAME=$(BDIR)/parse
+PARSE_PROG_NAME=$(BDIR)/parsetest
 SEM_PROG_NAME=$(BDIR)/semantest
 STR_PROG_NAME=$(BDIR)/stringtest
 PROG_NAME=$(BDIR)/treetest
@@ -35,7 +36,7 @@ PROG_NAME=$(BDIR)/treetest
 all: $(TREE_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PROG_NAME)
 	
-parse: $(PARSE_OBJS)
+parsetest: $(PARSE_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PARSE_PROG_NAME)
 	
 stringtest: $(STR_OBJS)

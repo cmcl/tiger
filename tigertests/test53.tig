@@ -1,0 +1,15 @@
+let
+	function f() =
+		let
+			var limit := 10
+			var i := 2 /* lo */
+			var test := 1
+		in
+			if test then
+				print(chr(i))
+			else
+				print(chr(i))
+		end
+in
+	f()
+end

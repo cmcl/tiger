@@ -5,10 +5,13 @@ let
 			var i := 2 /* lo */
 			var test := 1
 		in
-			if test then
-				print(chr(i))
-			else
-				print(chr(i))
+			while 1 do
+			(print(chr(i));
+				if test then
+					i := i + 1
+				else
+					/* doesn't like this : test := 0 here */
+					print("false"))
 		end
 in
 	f()

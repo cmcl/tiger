@@ -6,9 +6,9 @@ let
 			var test := 1
 		in
 			if test then
-				print(chr(i))
+			print(chr(i))
 			else
-				print(chr(i))
+				test := 1
 		end
 in
 	f()

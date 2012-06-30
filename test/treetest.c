@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	A_exp absyn_root;
 	F_fragList frags;
 	char outfile[100];
-	FILE *out = stdout;
+	FILE *out = NULL;
 	
 	if (argc == 2) {
 		absyn_root = parse(argv[1]);
@@ -53,16 +53,19 @@ int main(int argc, char *argv[])
 		
 		/* convert the filename */
 		sprintf(outfile, "%s.s", argv[1]);
-		if ((out = fopen(outfile, "w")) != NULL) {
-			/* Chapter 8 */
-			for (;frags;frags=frags->tail)
-				if (frags->head->kind == F_procFrag) 
-					doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
-				else if (frags->head->kind == F_stringFrag) 
-					fprintf(out, "%s\n", frags->head->u.stringg.str);
-		
-			fclose(out);
-		}
+		/* Chapter 8 */
+		for (;frags;frags=frags->tail)
+			if (frags->head->kind == F_procFrag) 
+				doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
+			else if (frags->head->kind == F_stringFrag) {
+				if (out == NULL) {
+					out = fopen(outfile, "w");
+					if (out == NULL) assert(0 && "Cannot create file.");
+				}
+				fprintf(out, "%s\n", frags->head->u.stringg.str);
+			}
+	
+		fclose(out);
 		return 0;
 	}
 	EM_error(0,"usage: tiger file.tig");

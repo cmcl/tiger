@@ -476,8 +476,11 @@ static Tr_exp Tr_ifExpWithElse(Tr_exp test, Tr_exp then, Tr_exp elsee)
 							T_Eseq(T_Move(T_Temp(r), unEx(elsee)), 
 								T_Eseq(joinJump, T_Eseq(T_Label(join), T_Temp(r))))))))));
 	} else {
-		T_stm thenStm = (then->kind == Tr_nx) ? then->u.nx : then->u.cx.stm;
-		T_stm elseeStm = (elsee->kind == Tr_cx) ? elsee->u.nx : elsee->u.cx.stm;
+		T_stm thenStm;
+		if (then->kind == Tr_ex) thenStm = T_Exp(then->u.ex);
+		else thenStm = (then->kind == Tr_nx) ? then->u.nx : then->u.cx.stm;
+
+		T_stm elseeStm = (elsee->kind == Tr_nx) ? elsee->u.nx : elsee->u.cx.stm;
 		result = Tr_Nx(T_Seq(cond.stm, T_Seq(T_Label(t), T_Seq(thenStm,
 					T_Seq(joinJump, T_Seq(T_Label(f),
 							T_Seq(elseeStm, T_Seq(joinJump, T_Label(join)))))))));

@@ -148,7 +148,7 @@ Temp_tempList F_caller_saves(void)
 	return caller_saves;
 }
 
-static Temp_map F_tempMap = NULL;
+Temp_map F_tempMap = NULL;
 static void F_add_to_map(string str, Temp_temp temp)
 {
 	if (!F_tempMap) {

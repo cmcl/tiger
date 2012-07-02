@@ -125,23 +125,23 @@ static Temp_temp munchExp(T_exp expr)
 				if (expr->u.BINOP.left->kind == T_CONST) {
 					/* BINOP(PLUS, CONST(i), e2) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e2 = loc->u.BINOP.right;
-					int n = loc->u.BINOP.left->u.CONST;
+					T_exp e2 = expr->u.BINOP.right;
+					int n = expr->u.BINOP.left->u.CONST;
 					emit(AS_Oper(String_format("add `d0,`s0+%d\n", n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else if (expr->u.BINOP.right->kind == T_CONST) {
 					/* BINOP(PLUS, e2, CONST(i)) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e2 = loc->u.BINOP.left;
-					int n = loc->u.BINOP.right->u.CONST;
+					T_exp e2 = expr->u.BINOP.left;
+					int n = expr->u.BINOP.right->u.CONST;
 					emit(AS_Oper(String_format("add `d0,`s0+%dv", n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else {
 					/* BINOP(PLUS, e1, e2) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e1 = loc->u.BINOP.left, e2 = loc->u.BINOP.right;
+					T_exp e1 = expr->u.BINOP.left, e2 = expr->u.BINOP.right;
 					emit(AS_Oper(String_format("add `d0,`s0+`s1\n"), TL(r, NULL),
 						TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
 					return r;

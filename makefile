@@ -18,6 +18,9 @@ STR_OBJECTS = stringtest.o util.o
 TREE_OBJECTS = treetest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o \
 	table.o prabsyn.o env.o semant.o types.o temp.o translate.o frame.o tree.o \
 	assem.o canon.o printtree.o parse.o escape.o
+CG_OBJECTS = codegentest.o y.tab.o lex.yy.o errormsg.o util.o symbol.o absyn.o \
+	table.o prabsyn.o env.o semant.o types.o temp.o translate.o frame.o tree.o \
+	assem.o canon.o printtree.o parse.o escape.o codegen.o
 	
 LEXER_OBJS = $(patsubst %,$(ODIR)/%,$(LEXER_OBJECTS))
 PARSER_OBJS = $(patsubst %,$(ODIR)/%,$(PARSER_OBJECTS))
@@ -25,16 +28,21 @@ PARSE_OBJS = $(patsubst %,$(ODIR)/%,$(PARSE_OBJECTS))
 SEM_OBJS = $(patsubst %,$(ODIR)/%,$(SEM_OBJECTS))
 STR_OBJS  = $(patsubst %, $(ODIR)/%, $(STR_OBJECTS))
 TREE_OBJS = $(patsubst %, $(ODIR)/%, $(TREE_OBJECTS))
+CG_OBJS = $(patsubst %, $(ODIR)/%, $(CG_OBJECTS))
 
 LEXER_PROG_NAME=$(BDIR)/lextest
 PARSER_PROG_NAME=$(BDIR)/parsertest
 PARSE_PROG_NAME=$(BDIR)/parsetest
 SEM_PROG_NAME=$(BDIR)/semantest
 STR_PROG_NAME=$(BDIR)/stringtest
-PROG_NAME=$(BDIR)/treetest
+TREE_PROG_NAME=$(BDIR)/treetest
+PROG_NAME=$(BDIR)/codegentest
 
-all: $(TREE_OBJS)
+all: $(CG_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PROG_NAME)
+
+treetest: $(TREE_OBJS)
+	$(COMPILER) $^ $(OPTIONS) $(TREE_PROG_NAME)
 	
 parsetest: $(PARSE_OBJS)
 	$(COMPILER) $^ $(OPTIONS) $(PARSE_PROG_NAME)
@@ -58,6 +66,9 @@ $(ODIR)/%.o: $(TESTDIR)/%.c
 	$(COMPILER) $(CFLAGS) $@ $<
 
 $(ODIR)/frame.o: $(SDIR)/x86frame.c
+	$(COMPILER) $(CFLAGS) $@ $<
+	
+$(ODIR)/codegen.o: $(SDIR)/x86codegen.c
 	$(COMPILER) $(CFLAGS) $@ $<
 
 ##$(ODIR)/frame.o: $(SDIR)/amd64frame.c

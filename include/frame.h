@@ -38,6 +38,7 @@ struct F_fragList_ {
 };
 
 extern const int F_WORD_SIZE;
+extern Temp_map F_tempMap;
 
 F_frame F_newFrame(Temp_label name, U_boolList formals);
 Temp_label F_name(F_frame frame);

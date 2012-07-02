@@ -83,13 +83,14 @@ static void munchStm(T_stm stm)
 		}
 		case T_CJUMP:
 		{
-			Temp_temp left = munchExp(expr->u.CJUMP.left),
-				right = munchExp(expr->u.CJUMP.right);
-			emit(AS_Oper("cmp `s0,`s1\n", NULL, TL(left, right), NULL));
+			Temp_temp left = munchExp(stm->u.CJUMP.left),
+				right = munchExp(stm->u.CJUMP.right);
+			emit(AS_Oper("cmp `s0,`s1\n", NULL, 
+				TL(left, TL(right, NULL)), NULL));
 			/* No need to deal with CJUMP false label
 			 * as canonical module has it follow CJUMP */
 			char *instr = NULL;
-			switch (expr->u.CJUMP.op) {
+			switch (stm->u.CJUMP.op) {
 				case T_eq:
 					instr = "je"; break;
 				case T_ne:
@@ -105,7 +106,7 @@ static void munchStm(T_stm stm)
 				default: assert(0);
 			}
 			emit(AS_Oper(String_format("%s `d0\n", instr), NULL, NULL,
-				AS_Targets(TL(expr->u.CJUMP.true, NULL))));
+				AS_Targets(Temp_LabelList(stm->u.CJUMP.true, NULL))));
 			break;
 		}
 		case T_EXP:
@@ -126,23 +127,23 @@ static Temp_temp munchExp(T_exp expr)
 				if (expr->u.BINOP.left->kind == T_CONST) {
 					/* BINOP(PLUS, CONST(i), e2) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e2 = loc->u.BINOP.right;
-					int n = loc->u.BINOP.left->u.CONST;
+					T_exp e2 = expr->u.BINOP.right;
+					int n = expr->u.BINOP.left->u.CONST;
 					emit(AS_Oper(String_format("add `d0,`s0+%d\n", n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else if (expr->u.BINOP.right->kind == T_CONST) {
 					/* BINOP(PLUS, e2, CONST(i)) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e2 = loc->u.BINOP.left;
-					int n = loc->u.BINOP.right->u.CONST;
+					T_exp e2 = expr->u.BINOP.left;
+					int n = expr->u.BINOP.right->u.CONST;
 					emit(AS_Oper(String_format("add `d0,`s0+%dv", n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else {
 					/* BINOP(PLUS, e1, e2) */
 					Temp_temp r = Temp_newtemp();
-					T_exp e1 = loc->u.BINOP.left, e2 = loc->u.BINOP.right;
+					T_exp e1 = expr->u.BINOP.left, e2 = expr->u.BINOP.right;
 					emit(AS_Oper(String_format("add `d0,`s0+`s1\n"), TL(r, NULL),
 						TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
 					return r;
@@ -154,14 +155,14 @@ static Temp_temp munchExp(T_exp expr)
 		{
 			T_exp loc = expr->u.MEM;
 			if (loc->kind == T_BINOP && loc->u.BINOP.op == T_plus)
-				if (loc->u.BINOP.left == T_CONST) {
+				if (loc->u.BINOP.left->kind == T_CONST) {
 					/* MEM(BINOP(PLUS, CONST(i), e2)) */
 					Temp_temp r = Temp_newtemp();
 					T_exp e2 = loc->u.BINOP.right;
 					int n = loc->u.BINOP.left->u.CONST;
 					emit(AS_Move(String_format("mov `d0,[`s0+%d]\n", n),
 						TL(r, NULL), TL(munchExp(e2), NULL)));
-				} else if (loc->u.BINOP.right == T_CONST) {
+				} else if (loc->u.BINOP.right->kind == T_CONST) {
 					/* MEM(BINOP(PLUS, e2, CONST(i))) */
 					Temp_temp r = Temp_newtemp();
 					T_exp e2 = loc->u.BINOP.left;
@@ -199,7 +200,7 @@ static Temp_temp munchExp(T_exp expr)
 		case T_NAME:
 		{
 			/* NAME(n) */
-			Temp_temp r = Temp_newtemp();
+			//Temp_temp r = Temp_newtemp();
 			emit(AS_Label(Temp_labelstring(expr->u.NAME), expr->u.NAME));
 			return NULL;
 		}
@@ -232,7 +233,7 @@ static Temp_tempList munchArgs(unsigned int n, T_expList eList)
 	
 	static F_accessList formals = NULL;
 	if (!formals && eList) {
-		formals = F_formals(frame);
+		formals = F_formals(CODEGEN_frame);
 		reg_count = 0;
 	} else if (eList) formals = formals->tail;
 	else return NULL;

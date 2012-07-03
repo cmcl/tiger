@@ -295,14 +295,25 @@ static struct expty transExp(Tr_level level, S_table venv, S_table tenv, Tr_exp 
 			A_exp setFalse = A_AssignExp(a->pos, 
 				A_SimpleVar(a->pos, S_Symbol("test")), A_IntExp(a->pos, 0));
 			/* The let expression we pass to this function */
-			A_exp letExp = A_LetExp(a->pos, A_DecList(i, A_DecList(limit, A_DecList(test, NULL))),
-				A_IfExp(a->pos, A_OpExp(a->pos, A_leOp, a->u.forr.lo, a->u.forr.hi),
-					A_WhileExp(a->pos, testExp,
-						A_SeqExp(a->pos, A_ExpList(a->u.forr.body,
-								A_ExpList(A_IfExp(a->pos,
-										A_OpExp(a->pos, A_ltOp, iExp, limitExp),
-											increment,setFalse), NULL)))), NULL));
-			return transExp(level, venv, tenv, breakk, letExp);
+			A_exp letExp = A_LetExp(a->pos, 
+				A_DecList(i, A_DecList(limit, A_DecList(test, NULL))),
+				A_SeqExp(a->pos,
+					A_ExpList(
+						A_IfExp(a->pos,
+							A_OpExp(a->pos, A_leOp, a->u.forr.lo, a->u.forr.hi),
+							A_WhileExp(a->pos, testExp,
+								A_SeqExp(a->pos, 
+									A_ExpList(a->u.forr.body,
+										A_ExpList(
+											A_IfExp(a->pos, 
+												A_OpExp(a->pos, A_ltOp, iExp, 
+													limitExp),
+												increment, setFalse), 
+											NULL)))), 
+							NULL),
+						NULL)));
+			struct expty e = transExp(level, venv, tenv, breakk, letExp);
+			return e;
 		}
 		case A_breakExp:
 		{

@@ -62,8 +62,12 @@ string String_format(const char *s, ...)
 			}
 			n = strlen(str);
 		} else {
-			str = p;
-			n = 1;
+			if (i < BUFSIZE - 1) {
+				buffer[i++] = *p; continue;
+			} else {
+				str = p;
+				n = 1;
+			}
 		}
 		if (i + n > BUFSIZE) {
 			result = checked_realloc(result, sizeof(*result) * (len + i + 1));
@@ -72,7 +76,7 @@ string String_format(const char *s, ...)
 			len += i;
 			i = 0;
 		}
-		strncat(buffer, str, n);
+		strncpy(buffer + i, str, n);
 		i += n;
 		if (isDigit) { free((void *)str); str = NULL; isDigit = FALSE; }
 	}

@@ -89,4 +89,4 @@ $(SDIR)/y.tab.c: $(SDIR)/tiger.grm
 
 clean:
 	rm -f $(ODIR)/*.o $(LEXER_PROG_NAME) $(PARSER_PROG_NAME) $(PARSE_PROG_NAME) \
-		$(SEM_PROG_NAME) $(STR_PROG_NAME) $(PROG_NAME)
+		$(SEM_PROG_NAME) $(STR_PROG_NAME) $(TREE_PROG_NAME) $(PROG_NAME)

@@ -239,6 +239,16 @@ Temp_temp F_SP(void)
 	return sp;
 }
 
+static Temp_temp ra = NULL;
+Temp_temp F_RA(void)
+{
+	if (!ra) {
+		ra = Temp_newtemp();
+		F_add_to_map("rdkd", ra);
+	}
+	return ra;
+}
+
 static Temp_temp rv = NULL;
 Temp_temp F_RV(void)
 {
@@ -268,9 +278,14 @@ T_stm F_procEntryExit1(F_frame frame, T_stm stm)
 	return stm; // dummy implementation
 }
 
+static Temp_tempList returnSink = NULL;
 AS_instrList F_procEntryExit2(AS_instrList body)
 {
-	return body; // dummy implementation
+	if (!returnSink) {
+		returnSink = TL(F_RA(), F_callee_saves());
+	}
+	return AS_splice(body, 
+		AS_InstrList(AS_Oper("", NULL, returnSink, NULL), NULL));
 }
 
 AS_proc F_procEntryExit3(F_frame frame, AS_instrList body)

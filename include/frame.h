@@ -57,11 +57,13 @@ F_fragList F_FragList(F_frag head, F_fragList tail);
 Temp_tempList F_registers(void);
 
 /* provisionally part of the interface (needed by codegen) */
-Temp_tempList F_caller_saves(void); 
+Temp_tempList F_caller_saves(void);
 
 Temp_temp F_FP(void); /* Frame pointer */
 
 Temp_temp F_SP(void); /* stack pointer */
+
+Temp_temp F_RA(void); /* return address register */
 
 Temp_temp F_RV(void); /* Return value location */
 

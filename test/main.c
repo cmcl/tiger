@@ -43,7 +43,6 @@ static void doProc(FILE *out, F_frame frame, T_stm body)
 int main(int argc, char *argv[])
 {
 	A_exp absyn_root;
-	S_table base_env, base_tenv;
 	F_fragList frags;
 	char outfile[100];
 	FILE *out = stdout;

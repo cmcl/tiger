@@ -32,10 +32,10 @@ static void doProc(FILE *out, F_frame frame, T_stm body)
 	/* printStmList(stdout, stmList);*/
 	iList  = F_codegen(frame, stmList); /* 9 */
 	
-	fprintf(out, "BEGIN %s\n", Temp_labelstring(F_name(frame)));
+	//fprintf(out, "BEGIN %s\n", Temp_labelstring(F_name(frame)));
 	AS_printInstrList (out, iList,
 					   Temp_layerMap(F_tempMap,Temp_name()));
-	fprintf(out, "END %s\n\n", Temp_labelstring(F_name(frame)));
+	//fprintf(out, "END %s\n\n", Temp_labelstring(F_name(frame)));
 }
 
 int main(int argc, char *argv[])
@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
 	A_exp absyn_root;
 	F_fragList frags;
 	char outfile[100];
+	int isFirstString = 1;
 	FILE *out = stdout;
 	
 	if (argc == 2) {
@@ -64,12 +65,19 @@ int main(int argc, char *argv[])
 		sprintf(outfile, "%s.s", argv[1]);
 		out = fopen(outfile, "w");
 		/* Chapter 8, 9, 10, 11 & 12 */
-		for (;frags;frags=frags->tail)
-			if (frags->head->kind == F_procFrag) 
+		for (;frags;frags=frags->tail) {
+			if (frags->head->kind == F_procFrag) {
 				doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
-			else if (frags->head->kind == F_stringFrag) 
-				fprintf(out, "%s\n", frags->head->u.stringg.str);
-		
+			} else if (frags->head->kind == F_stringFrag) {
+				if (isFirstString) {
+					fprintf(out, "section .text\n\t.db\t\"%s\"\n",
+						frags->head->u.stringg.str);
+					isFirstString = 0;
+				} else {
+					fprintf(out, "\t.db\t\"%s\"\n", frags->head->u.stringg.str);
+				}
+			}
+		}
 		fclose(out);
 		return 0;
 	}

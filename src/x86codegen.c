@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "codegen.h"
 #include "temp.h"
 #include "util.h"
@@ -205,9 +206,12 @@ static Temp_temp munchExp(T_exp expr)
 		case T_NAME:
 		{
 			/* NAME(n) */
-			//Temp_temp r = Temp_newtemp();
-			emit(AS_Label(Temp_labelstring(expr->u.NAME), expr->u.NAME));
-			return NULL;
+			Temp_temp r = Temp_newtemp();
+			emit(AS_Label(
+				String_format("I@M A NAME %s:\n", 
+								Temp_labelstring(expr->u.NAME)),
+					expr->u.NAME));
+			return r;
 		}
 		case T_CONST:
 		{
@@ -224,7 +228,7 @@ static Temp_temp munchExp(T_exp expr)
 			Temp_tempList list = munchArgs(0, expr->u.CALL.args,
 											F_formals(CODEGEN_frame));
 			emit(AS_Oper("call `s0\n", F_caller_saves(), TL(r, list), NULL));
-			return NULL; // a call doesn't return anything; return value in register
+			return r; // a call doesn't return anything; return value in register
 		}
 		default: assert(0);
 	}

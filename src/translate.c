@@ -3,6 +3,7 @@
  * to IR form.
  * Created by Craig McL on 4/5/2012
  */
+#include <stdlib.h>
 #include "translate.h"
 #include "tree.h"
 
@@ -565,12 +566,12 @@ Tr_exp Tr_callExp(Tr_level level, Tr_level funLevel, Temp_label funLabel, Tr_exp
 	return Tr_Ex(T_Call(T_Name(funLabel), args));
 }
 
-
+static F_fragList stringList = NULL;
 Tr_exp Tr_stringExp(string str)
 {
 	Temp_label strLabel = Temp_newlabel();
 	F_frag fragment = F_StringFrag(strLabel, str);
-	fragList = F_FragList(fragment, fragList);
+	stringList = F_FragList(fragment, stringList);
 	return Tr_Ex(T_Name(strLabel));
 }
 
@@ -604,5 +605,9 @@ void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals)
 
 F_fragList Tr_getResult(void)
 {
-	return fragList;
+	F_fragList cursor = NULL, prev = NULL;
+	for (cursor = stringList; cursor; cursor = cursor->tail)
+		prev = cursor;
+	prev->tail = fragList;
+	return stringList;
 }

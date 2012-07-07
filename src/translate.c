@@ -472,10 +472,12 @@ static Tr_exp Tr_ifExpWithElse(Tr_exp test, Tr_exp then, Tr_exp elsee)
 	doPatch(cond.trues, t);
 	doPatch(cond.falses, f);
 	if (elsee->kind == Tr_ex) {
-		result = Tr_Ex(T_Eseq(cond.stm, T_Eseq(T_Label(t), T_Eseq(T_Move(T_Temp(r), unEx(then)),
+		result = Tr_Ex(T_Eseq(cond.stm, T_Eseq(T_Label(t), 
+					T_Eseq(T_Move(T_Temp(r), unEx(then)),
 					T_Eseq(joinJump, T_Eseq(T_Label(f),
 							T_Eseq(T_Move(T_Temp(r), unEx(elsee)), 
-								T_Eseq(joinJump, T_Eseq(T_Label(join), T_Temp(r))))))))));
+								T_Eseq(joinJump, 
+								T_Eseq(T_Label(join), T_Temp(r))))))))));
 	} else {
 		T_stm thenStm;
 		if (then->kind == Tr_ex) thenStm = T_Exp(then->u.ex);
@@ -518,8 +520,8 @@ Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right)
 	T_relOp oper;
 	switch(op) {
 		case A_ltOp: oper = T_lt; break;
-		case A_leOp: oper = T_gt; break;
-		case A_gtOp: oper = T_le; break;
+		case A_leOp: oper = T_le; break;
+		case A_gtOp: oper = T_gt; break;
 		case A_geOp: oper = T_ge; break;
 		default: break; // should never happen
 	}
@@ -608,6 +610,6 @@ F_fragList Tr_getResult(void)
 	F_fragList cursor = NULL, prev = NULL;
 	for (cursor = stringList; cursor; cursor = cursor->tail)
 		prev = cursor;
-	prev->tail = fragList;
-	return stringList;
+	if (prev) prev->tail = fragList;
+	return stringList ? stringList : fragList;
 }

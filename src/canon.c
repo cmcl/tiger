@@ -6,7 +6,6 @@
 #include "util.h"
 #include "symbol.h"
 #include "temp.h"
-#include "tree.h"
 #include "canon.h"
 
 typedef struct expRefList_ *expRefList;

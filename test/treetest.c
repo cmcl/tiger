@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 				fprintf(out, "%s\n", frags->head->u.stringg.str);
 			}
 	
-		fclose(out);
+		if (out) fclose(out);
 		return 0;
 	}
 	EM_error(0,"usage: tiger file.tig");

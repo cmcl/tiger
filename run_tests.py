@@ -21,14 +21,17 @@ for n in xrange(1, 50):
         print "Skipping incorrect program", n
         continue
     else:
-		print "Compiling program", n, "to IR..."
+        print "Compiling program", n, "to IR..."
     p = Popen([program, "tigertests/test{0}.tig".format(n)],
-               stderr=PIPE)
+               stdout=PIPE, stderr=PIPE)
     s = p.stderr.read()
+    print s
+    if n == 4:
+        print p.stdout.read()
     if name in s:
         print "Test", n
     elif "Segmentation fault" in s:
-		print "Test", n
+        print "Test", n
     results.add(s)
 
 for x in results:

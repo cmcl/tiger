@@ -65,6 +65,7 @@ static void munchStm(T_stm stm)
 				emit(AS_Move(String_format("mov `d0,`s0\n"),
 					TL(munchExp(dst), NULL), TL(munchExp(src), NULL)));
 			else assert(0); /* destination of move must be temp or memory location */
+			break;
 		}
 		case T_SEQ:
 		{
@@ -109,7 +110,7 @@ static void munchStm(T_stm stm)
 					instr = "jge"; break;
 				default: assert(0);
 			}
-			emit(AS_Oper(String_format("%s `d0\n", instr), NULL, NULL,
+			emit(AS_Oper(String_format("%s `j0\n", instr), NULL, NULL,
 				AS_Targets(Temp_LabelList(stm->u.CJUMP.true, NULL))));
 			break;
 		}
@@ -127,28 +128,45 @@ static Temp_temp munchExp(T_exp expr)
 	switch(expr->kind) {
 		case T_BINOP:
 		{
-			if (expr->u.BINOP.op == T_plus)
+			char *op = NULL, *sign = NULL;
+			switch (expr->u.BINOP.op) {
+			case T_plus:
+				op = "add"; sign = "+"; break;
+			case T_minus:
+				op = "sub"; sign = "-"; break;
+			case T_mul:
+				op = "mul"; sign = "*"; break;
+			case T_div:
+				op = "div"; sign = "/"; break;
+			default:
+				assert(0 && "Invalid operator");
+			}
+			if (1)
 				if (expr->u.BINOP.left->kind == T_CONST) {
-					/* BINOP(PLUS, CONST(i), e2) */
+					/* BINOP(op, CONST(i), e2) */
 					Temp_temp r = Temp_newtemp();
 					T_exp e2 = expr->u.BINOP.right;
 					int n = expr->u.BINOP.left->u.CONST;
-					emit(AS_Oper(String_format("add `d0,`s0+%d\n", n),
+					emit(AS_Oper(String_format("%s `d0,`s0%s%d\n", 
+												op, sign, n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else if (expr->u.BINOP.right->kind == T_CONST) {
-					/* BINOP(PLUS, e2, CONST(i)) */
+					/* BINOP(op, e2, CONST(i)) */
 					Temp_temp r = Temp_newtemp();
 					T_exp e2 = expr->u.BINOP.left;
 					int n = expr->u.BINOP.right->u.CONST;
-					emit(AS_Oper(String_format("add `d0,`s0+%dv", n),
+					emit(AS_Oper(String_format("%s `d0,`s0%s%d\n",
+												op, sign, n),
 						TL(r, NULL), TL(munchExp(e2), NULL), NULL));
 					return r;
 				} else {
-					/* BINOP(PLUS, e1, e2) */
+					/* BINOP(op, e1, e2) */
 					Temp_temp r = Temp_newtemp();
 					T_exp e1 = expr->u.BINOP.left, e2 = expr->u.BINOP.right;
-					emit(AS_Oper(String_format("add `d0,`s0+`s1\n"), TL(r, NULL),
+					emit(AS_Oper(String_format("%s `d0,`s0%s`s1\n", 
+												op, sign), 
+						TL(r, NULL),
 						TL(munchExp(e1), TL(munchExp(e2), NULL)), NULL));
 					return r;
 				}
@@ -207,10 +225,7 @@ static Temp_temp munchExp(T_exp expr)
 		{
 			/* NAME(n) */
 			Temp_temp r = Temp_newtemp();
-			emit(AS_Label(
-				String_format("I@M A NAME %s:\n", 
-								Temp_labelstring(expr->u.NAME)),
-					expr->u.NAME));
+			Temp_enter(F_tempMap, r, Temp_labelstring(expr->u.NAME));
 			return r;
 		}
 		case T_CONST:
@@ -228,7 +243,7 @@ static Temp_temp munchExp(T_exp expr)
 			Temp_tempList list = munchArgs(0, expr->u.CALL.args,
 											F_formals(CODEGEN_frame));
 			emit(AS_Oper("call `s0\n", F_caller_saves(), TL(r, list), NULL));
-			return r; // a call doesn't return anything; return value in register
+			return r;
 		}
 		default: assert(0);
 	}

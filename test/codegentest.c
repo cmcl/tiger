@@ -70,11 +70,14 @@ int main(int argc, char *argv[])
 				doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
 			} else if (frags->head->kind == F_stringFrag) {
 				if (isFirstString) {
-					fprintf(out, "section .text\n\t.db\t\"%s\"\n",
-						frags->head->u.stringg.str);
+					fprintf(out, "section .text\n"\t%s\t.db\t\"%s\"\n", 
+							frags->head->u.stringg.str,
+							frags->head->u.stringg.label);
 					isFirstString = 0;
 				} else {
-					fprintf(out, "\t.db\t\"%s\"\n", frags->head->u.stringg.str);
+					fprintf(out, "\t%s\t.db\t\"%s\"\n", 
+							frags->head->u.stringg.str,
+							frags->head->u.stringg.label);
 				}
 			}
 		}
